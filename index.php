@@ -13,37 +13,37 @@
     <div id="heroContent">
         Buy Local<br>Sell Local<br>Be Local
     </div>
-    <div id="heroCategories" class="category-scroll">
-        <button class="btn category-btn">Electronics</button>
-        <button class="btn category-btn">Fashion</button>
-        <button class="btn category-btn">Home</button>
-        <button class="btn category-btn">Books</button>
-        <button class="btn category-btn">Tools</button>
-        <button class="btn category-btn">Sports</button>
-        <button class="btn category-btn">Toys</button>
-        <button class="btn category-btn">Other</button>
-        <button class="btn category-btn">Automotive</button>
-        <button class="btn category-btn">Garden</button>
-        <button class="btn category-btn">Fishing & Marine</button>
-        <button class="btn category-btn">Antiques</button>
-        <button class="btn category-btn">Pet Supplies</button>
-        <button class="btn category-btn">Health & Beauty</button>
+    <div id="heroCategories" class="category-grid">
+        <button class="btn cat-grid-btn">Electronics</button>
+        <button class="btn cat-grid-btn">Fashion</button>
+        <button class="btn cat-grid-btn">Home</button>
+        <button class="btn cat-grid-btn">Books</button>
+        <button class="btn cat-grid-btn">Tools</button>
+        <button class="btn cat-grid-btn">Sports</button>
+        <button class="btn cat-grid-btn">Toys</button>
+        <button class="btn cat-grid-btn">Other</button>
+        <button class="btn cat-grid-btn">Automotive</button>
+        <button class="btn cat-grid-btn">Garden</button>
+        <button class="btn cat-grid-btn">Fishing & Marine</button>
+        <button class="btn cat-grid-btn">Antiques</button>
+        <button class="btn cat-grid-btn">Pet Supplies</button>
+        <button class="btn cat-grid-btn">Health & Beauty</button>
     </div>
 </section>
 
-<div class="login-register" id="loginDiv">
+<section class="login-register" id="loginDiv">
     <button class="btn me-2" id="loginBtn">Login</button>
     <button class="btn btn-outline-light">Register</button>
-</div>
+</section>
 
-<div class="search-bar" id="searchBar">
+<section class="search-bar" id="searchBar">
     <input type="text" id="searchInput" class="form-control" placeholder="Search for products...">
     <button class="btn" id="browseBtn">Browse Categories</button>
-</div>
+</section>
 
-<div class="product-area" id="productArea">
+<section class="display-div" id="productArea">
     Search Results...
-</div>
+</section>
 
 <?php 
     // Get Footer
@@ -73,11 +73,11 @@
     const q = searchInput.value.toLowerCase().trim();
     if (q === "") {
       productArea.innerHTML = "Search Results...";
-      productArea.style.color = "#b8c2cc";
+//      productArea.style.color = "#b8c2cc";
       return;
     }
     productArea.innerHTML = "";
-    productArea.style.color = "#e4e8eb";
+//    productArea.style.color = "#e4e8eb";
     PRODUCTS.forEach(p => {
       if (p.desc.toLowerCase().includes(q)) {
         const card = document.createElement("div");

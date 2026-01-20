@@ -1,0 +1,14 @@
+Initial test of display on mobile results:
+Device with large text does not render correctly, the hero takes up 
+most of the screen resulting in item list becoming unreadable.
+Resolved by adjusting css code for mobile device.
+Although this fixes mobile device, desktop now displays large 
+space below the search results as the display area expands as new content is introduced.
+To fix the layout for your multi-device test suite—including the Lenovo (1440p/1080p), Moto Edge 20, and the Samsung S5 (Large Text)—you implemented a Conditional Scrolling Strategy.
+The Solution
+
+    Mobile (S5/Moto Edge): Switched to Natural Document Scrolling. By setting overflow: visible on the main container, the entire page grows with the content, allowing users to scroll past the Hero and Search bar with their thumb, preventing the "letterbox" effect on small or large-text screens.
+
+    Desktop (Lenovo): Reinstated a Fixed Frame with Internal Scrolling. By using flex: 1 and overflow-y: auto on the product area, you forced the container to stretch to the footer even when empty, eliminating the "black void" while keeping the header/footer pinned.
+
+    Landscape/Short Screens: Implemented Flexible Constraints. You used max-height and aspect-ratio: auto !important on the Hero categories to ensure that even in landscape mode, the buttons never "break out" or swallow the entire screen.
