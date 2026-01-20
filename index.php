@@ -24,6 +24,10 @@
         <button class="btn category-btn">Other</button>
         <button class="btn category-btn">Automotive</button>
         <button class="btn category-btn">Garden</button>
+        <button class="btn category-btn">Fishing & Marine</button>
+        <button class="btn category-btn">Antiques</button>
+        <button class="btn category-btn">Pet Supplies</button>
+        <button class="btn category-btn">Health & Beauty</button>
     </div>
 </section>
 

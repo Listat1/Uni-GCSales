@@ -7,23 +7,33 @@ html, body {
 body {
     display: flex;
     flex-direction: column;
+    min-height: 100dvh; 
     transition: background 0.3s, color 0.3s;
+    background-color: #1e1e1e; 
+    color: #e0e0e0;
 }
 
-/* Dark mode backgrounds */
-body {background-color: #1e1e1e; color: #e0e0e0; }
-
+/* --- Layout Container --- */
 main {
     flex: 1;
     display: flex;
     flex-direction: column;
     padding: 1rem;
-    overflow: hidden; }
+    overflow-y: auto;
+    
+    /* Centering logic for the 1280px limit */
+    width: 100%;
+    max-width: 1280px;
+    margin: 0 auto;
+}
 
-/* Hero */
+/* --- Hero Section --- */
 .hero {
     position: relative;
-    height: 30vh;
+    width: 100%;
+    /* Cinematic 3:1 Aspect Ratio */
+    aspect-ratio: 3 / 1;
+    max-height: 400px; 
     border-radius: 10px;
     display: flex;
     justify-content: center;
@@ -36,59 +46,67 @@ main {
     font-size: 1.5rem;
     font-weight: 600;
     flex-direction: column;
-    overflow: hidden;
-}
-/* Set Hero Defaults (Banner Displayed) */
-#heroContent {
-    display: block;
-}
-/* Search Categories Hidden */
-#heroCategories {
-    display: none; 
+    z-index: 5;
+    flex-shrink: 0;
+    overflow: hidden; 
 }
 
-/* Hero image layering */
+/* Set Hero Defaults */
+#heroContent { display: block; z-index: 1; }
+#heroCategories { display: none; }
+
 .hero-bg-img {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    object-fit: fill;
+    /* 'cover' prevents image warping/stretching */
+    object-fit: cover; 
+    object-position: center;
     z-index: 0;
     opacity: 0.85;
 }
-/* Toggled State: Hide Banner & display */
-.hero.show-categories #heroContent {
-    display: none;
-}
-.hero.show-categories #heroCategories {
-    display: flex; /* Overrides the 'none' above */
-}
-.hero.show-categories { overflow-y: auto; }
 
-/* Hide Banner when showing categories */
+/* --- Toggled State: The constrained internal scroll --- */
+.hero.show-categories {
+    justify-content: flex-start; 
+    
+    /* On desktop, we want it to stay within a reasonable view */
+    height: auto; 
+    max-height: 50vh; /* It will only ever take up half the screen height */
+    
+    aspect-ratio: auto !important; 
+    overflow-y: auto; /* Re-enable the local scrollbar for the buttons */
+    
+    padding: 1.5rem 1rem;
+    display: flex;
+}
+
+.hero.show-categories #heroContent { display: none; }
+.hero.show-categories #heroCategories { display: flex; }
 .hero.show-categories .hero-bg-img {
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.3s ease;
 }
 
 #heroContent {
     position: absolute;
-    left: 17%;
-    top: 40%;
-    transform: translate(0, -50%);
-    z-index: 1;
+    left: 10%; /* Adjusted for centered layout */
+    top: 50%;
+    transform: translateY(-50%);
     text-align: left;
+    z-index: 1;
 }
 
+/* --- Categories & Buttons --- */
 .category-scroll {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
     width: 100%;
     justify-content: center;
+    padding: 1rem;
 }
 
 .category-btn {
@@ -103,7 +121,9 @@ main {
 }
 .category-btn:hover { transform: scale(1.05); cursor: pointer; }
 
-/* Login / Search / Product Area */
+/* --- Search & Interaction --- */
+.login-register, .search-bar { flex-shrink: 0; }
+
 .login-register {
     background-color: #2c3e50;
     color: #ecf0f1;
@@ -111,30 +131,6 @@ main {
     text-align: center;
     margin-bottom: 1rem;
     border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-}
-
-/* --- Button colours --- */
-    #loginBtn {
-    background-color: #2e7d32;
-    border-color: #2e7d32;
-    color: #f0f0f0;
-}
-#loginBtn:hover {
-    background-color: #388e3c;
-    border-color: #388e3c;
-    color: #ffffff;
-}
-
-#browseBtn {
-    background-color: #6a1b9a;
-    border-color: #6a1b9a;
-    color: #ffffff;
-}
-#browseBtn:hover {
-    background-color: #7b1fa2;
-    border-color: #7b1fa2;
-    color: #ffffff;
 }
 
 .search-bar { display: flex; gap: 5px; margin-bottom: 1rem; }
@@ -143,42 +139,63 @@ main {
     color: #ecf0f1;
     border: 1px solid #2c3e50;
 }
-
-/* Brighter placeholder */
 .search-bar input::placeholder { color: #b8c2cc; }
 
-/* Focus style for dark mode */
-.search-bar input:focus {
-    background-color: #3b566e;
-    color: #f0f0f0;
-    border-color: #2d6cdf;
-    outline: none;
-    box-shadow: 0 0 5px #2d6cdf;
-}
-
+/* --- Product Area --- */
 .product-area {
     flex: 1;
-    overflow-y: auto;
+    min-height: 300px; 
+    overflow-y: auto; 
     background-color: #2c3e50;
     color: #b8c2cc;
     padding: 1rem;
     border-radius: 10px;
     box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    overflow-y: auto;
 }
 
+/* --- Footer --- */
 footer {
     background-color: #1a252f;
     color: #ecf0f1;
     text-align: center;
     padding: 15px;
-    border-radius: 0 0 10px 10px;
+    border-radius: 10px 10px 0 0;
+    margin-top: auto;
+    font-size: 0.85rem;
+    flex-shrink: 0;
 }
 
-.btn-active { background-color: #0d6efd; color: white; border-color: #0d6efd; }
+/* --- Interaction States --- */
+#loginBtn { background-color: #2e7d32; color: #f0f0f0; }
+#browseBtn { background-color: #6a1b9a; color: #ffffff; }
+.btn-active { background-color: #0d6efd !important; color: white; }
 
+/* --- RESPONSIVENESS --- */
+
+/* Vertical fix for short screens */
+@media (max-height: 650px) {
+    .hero { aspect-ratio: auto; height: 180px; }
+    .hero.show-categories { max-height: 60vh; }
+}
+
+/* Mobile Portrait */
 @media (max-width: 768px) {
+    main { overflow: visible; display: block; }
+    .product-area {
+        flex: none;
+        overflow-y: visible;
+        min-height: 200px;
+        margin-bottom: 1rem;
+    }
+    .hero {
+        aspect-ratio: auto;
+        height: auto;
+        min-height: 200px;
+        padding: 2rem 1rem;
+    }
     .category-btn { flex: 1 1 45%; }
-    .hero { font-size: 1.2rem; padding: 10px; }
+    footer { display: flex; flex-direction: column; gap: 5px; }
 }
 
 /* --- SEARCH RESULT CARD STYLES --- */
@@ -190,12 +207,8 @@ footer {
     border-radius: 10px;
     margin-bottom: 12px;
 }
-
 .result-card img {
-    width: 110px;
-    height: 110px;
-    object-fit: cover;
-    border-radius: 8px;
+    width: 110px; height: 110px;
+    object-fit: cover; border-radius: 8px;
 }
-
 .result-desc { font-size: 0.95rem; color: #e4e8eb; }
