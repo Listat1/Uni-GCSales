@@ -60,12 +60,44 @@ footer {
 }
 
 /* Hero Defaults */
+/*
 #heroContent { 
     display: block; 
     z-index: 1; 
-    /* Apply text shadow for readability on bright images */
+    Apply text shadow for readability on bright images
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7), 0px 0px 20px rgba(0, 0, 0, 0.4);
 }
+*/
+#heroContent {
+    position: absolute;
+    left: 10%;
+    top: 0;
+    bottom: 0; /* Stretches the container from top to bottom */
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Keeps 'Buy Local' centered vertically */
+    z-index: 2;
+}
+
+#selectedCat {
+    position: absolute;
+    bottom: 10px;    /* 10px from the bottom edge */
+    left: 10%;       /* Aligned with your main text left-margin */
+    z-index: 6;      /* Higher than the image (0) and slogan (1) */
+    
+    font-size: 0.85rem;
+    color: #ffeb3b;  /* Vibrant yellow for contrast */
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 1); /* Heavy shadow for readability */
+}
+
+/* Hide the selection text when the category grid is open */
+.hero.show-categories #selectedCat {
+    display: none;
+}
+
 #heroCategories { display: none; }
 
 .hero-bg-img {
