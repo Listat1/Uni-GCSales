@@ -3,6 +3,6 @@ php_errors.log
 .DS_Store
 *.tmp
 
-# Sensitive data (we'll talk about this later)
+# Sensitive data 
 .env
 

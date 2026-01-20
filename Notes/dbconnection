@@ -1,0 +1,13 @@
+Because the decision to use GitHub has been made, it would be unadvisable to include 
+ENVIRONMENT_VARS in viewable code.
+GitIgnore includes the .env folder, so placing sensitive information here is good practice.
+EG:
+Hostname, Database Name, Username, Password for connecting.
+dbconnection.php will therefore
+1. Load ENVIRONMENT_VARS from .env
+2. Assign them to connection $PDO attributes
+3. Return 'Connection to the database' confirmation
+
+Can be called using getDatabaseConnection()
+PDO::ATTR_EMULATE_PREPARES   => false, // Do not use php PDO assistant
+Ensures prepare statements are correct (no auto managent)
