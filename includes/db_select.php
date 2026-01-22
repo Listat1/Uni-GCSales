@@ -14,11 +14,13 @@ function dbSelect($db, $sql, $params = []) {
 }
 
 function searchProducts($db, $q, $cat = '') {
-    $sql = "SELECT 
-                p.description, 
-                p.price, 
-                COALESCE(pi.thumb_path, pi.file_path) AS display_img 
-            FROM products p
+ $sql = "SELECT 
+            p.product_id, /* Unique reference ESSENTIAL for BS card expansion */
+            p.name,
+            p.description, 
+            p.price, 
+            COALESCE(pi.thumb_path, pi.file_path) AS display_img 
+        FROM products p
             LEFT JOIN product_images pi ON p.product_id = pi.product_id AND pi.sort_order = 1
             WHERE (p.name LIKE :q1 OR p.description LIKE :q2)";
 

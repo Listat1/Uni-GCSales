@@ -1,4 +1,5 @@
 <?php
+// includes/dbconnection.php
 function getDatabaseConnection() {
     // Load the .env file
     $envPath = __DIR__ . '/../.env';    // Check .env exists

@@ -11,3 +11,12 @@ dbconnection.php will therefore
 Can be called using getDatabaseConnection()
 PDO::ATTR_EMULATE_PREPARES   => false, // Do not use php PDO assistant
 Ensures prepare statements are correct (no auto managent)
+
+^^ Resulted in some debugging. First search query failed to work.
+Reason for fail was the same $ (:q) was being used to compare against 2 elements (product[name] and product[Description])
+which is not allowed when ATTR_EMULATE_PREPARES is not set.
+Solution:
+Assign search pattern to separate vars (duplicate), then compare against elements separately.
+:q1 > product[name]
+:q2 > product[Description]
+SELECT * FROM products WHERE (product[name] LIKE :q1 OR product[description] LIKE :q2) 

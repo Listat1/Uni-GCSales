@@ -51,3 +51,7 @@
     </header>
 
     <main class="container">
+        <?php 
+            // Comment include line to disable debugging descibed:
+            include 'includes/debug_get.php'; 
+        ?>

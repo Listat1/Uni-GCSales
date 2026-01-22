@@ -1,4 +1,4 @@
-/* /home/graham/links/Uni-GCSales/assets/css/main.css */
+/* assets/css/main.css */
 html, body {
     height: 100dvh; /* Force exactly screen height */
     margin: 0; 
@@ -59,26 +59,6 @@ footer {
     overflow: hidden; 
 }
 
-/* Hero Defaults */
-/*
-#heroContent { 
-    display: block; 
-    z-index: 1; 
-    Apply text shadow for readability on bright images
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7), 0px 0px 20px rgba(0, 0, 0, 0.4);
-}
-*/
-#heroContent {
-    position: absolute;
-    left: 10%;
-    top: 0;
-    bottom: 0; /* Stretches the container from top to bottom */
-    display: flex;
-    flex-direction: column;
-    justify-content: center; /* Keeps 'Buy Local' centered vertically */
-    z-index: 2;
-}
-
 #selectedCat {
     position: absolute;
     bottom: 10px;    /* 10px from the bottom edge */
@@ -97,8 +77,6 @@ footer {
 .hero.show-categories #selectedCat {
     display: none;
 }
-
-#heroCategories { display: none; }
 
 .hero-bg-img {
     position: absolute;
@@ -128,8 +106,21 @@ footer {
     display: flex;
 }
 
+/* 1. The ID is the "Master" - set it to hidden by default */
+#heroCategories { 
+    display: none !important; 
+}
+
 .hero.show-categories #heroContent { display: none; }
-.hero.show-categories #heroCategories { display: flex; }
+.hero.show-categories #heroCategories {  
+display: flex !important; 
+    flex-wrap: wrap;
+    gap: 10px;
+    width: 100%;
+    justify-content: center;
+    padding: 1rem;
+    z-index: 20; /* Ensure it sits above the hero text */
+}
 .hero.show-categories .hero-bg-img {
     opacity: 0;
     pointer-events: none;
@@ -142,17 +133,11 @@ footer {
     transform: translateY(-50%);
     text-align: left;
     z-index: 1;
+    /* Stop white text on Hero being washed out in light mode */
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
 }
 
 /* --- Categories & Buttons --- */
-.category-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    width: 100%;
-    justify-content: center;
-    padding: 1rem;
-}
 .cat-grid-btn {
     flex: 1 1 30%;
     padding: 15px;
@@ -259,8 +244,9 @@ footer {
 /* --- SEARCH RESULT CARD STYLES --- */
 .result-card {
     display: flex;
-    gap: 15px;
-    padding: 12px;
+    flex-direction: column; /* Changed from row to allow vertical expansion for carousel */
+    gap: 0; 
+    padding: 0; /* Let .card-body handle padding */
     background: #3b4b5c;
     border-radius: 10px;
     margin-bottom: 12px;
@@ -270,6 +256,65 @@ footer {
     object-fit: cover; border-radius: 8px;
 }
 .result-desc { font-size: 0.95rem; color: #e4e8eb; }
+
+/* Hide expanded content by default */
+.card-expanded-content {
+    display: none;
+    padding-top: 1rem;
+    border-top: 1px solid var(--btn-secondary);
+}
+/* When the card has the 'expanded' class, show the content */
+.result-card.expanded {
+    flex-direction: column; /* Stack info top-to-bottom */
+}
+.result-card.expanded .card-expanded-content {
+    display: block;
+}
+.result-card.expanded .thumb-img {
+    width: 100%; /* Make image/carousel full width in expanded view */
+    height: 250px;
+}
+
+/* -- Carousel Styling -- */
+/* Force Navigation icons to be white and high-contrast */
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+    /* invert(1) turns black SVGs into white */
+    /* brightness(2) makes them pop against the dark backgrounds */
+    filter: invert(1) grayscale(100%) brightness(200%) !important;
+    
+    /* Adds a semi-transparent dark circle so they are visible on light images too */
+    background-color: rgba(0, 0, 0, 0.3); 
+    border-radius: 50%;
+    background-size: 60% 60%; /* Scales the arrow inside the circle */
+    padding: 1.2rem;
+}
+
+/* Remove bottom rounding from image so it sits flush with the counter */
+.carousel-item img {
+    display: block;
+    border-bottom-left-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+}
+/* Shift the counter up to overlap the gap and fix the border */
+.carousel-placeholder > div:last-child {
+    margin-top: -2px;
+    border-top: 1px solid rgba(255,255,255,0.1) !important;
+}
+/* Ensure the placeholder doesn't have extra padding at the bottom */
+.carousel-placeholder {
+    padding-bottom: 0 !important;
+}
+/* Style the counter bar */
+.carousel-placeholder + .small {
+    font-family: monospace; 
+    letter-spacing: 1px;
+}
+
+/* Optional: Adjust hit-area so it doesn't block the whole image */
+.carousel-control-prev, .carousel-control-next {
+    width: 10%; 
+}
 
 /* -- LIGHT / DARK SWITCH -- */
 /* Custom dark/light variables for divs */
