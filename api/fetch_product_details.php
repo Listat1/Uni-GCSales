@@ -12,10 +12,12 @@ if (!$id) {
 }
 
 $db = getDatabaseConnection();
-
 // Only fetch the heavy 'long_description' when specifically requested
-$stmt = $db->prepare("SELECT name, long_description FROM products WHERE product_id = ?");
-$stmt->execute([$id]);
+$stmt = $db->prepare(
+    "SELECT name, price, long_description 
+    FROM products 
+    WHERE product_id = :id");
+$stmt->execute([':id' => $id]);
 $product = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if (!$product) {

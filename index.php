@@ -64,9 +64,10 @@
                         <h6 class="mb-1 fw-bold"><?= htmlspecialchars($p['name']) ?></h6>
                         <h5 class="mb-1">£<?= htmlspecialchars($p['price']) ?></h5>
                         <p class="mb-2 small text-secondary"><?= htmlspecialchars($p['description']) ?></p>
-                        <button class="btn btn-sm btn-outline-primary" 
-                                data-bs-toggle="collapse" 
-                                data-bs-target="#details-<?= $p['product_id'] ?>">
+                        <button 
+                        class="btn btn-sm btn-outline-primary" 
+                            data-bs-toggle="collapse" 
+                            data-bs-target="#details-<?= $p['product_id'] ?>">
                             View Details
                         </button>
                     </div>
@@ -96,19 +97,20 @@
         const heroCategories = document.getElementById('heroCategories');
         const loginDiv = document.getElementById('loginDiv');
         const loginBtn = document.getElementById('loginBtn');
-        const navList = document.getElementById('navList');
         const productArea = document.getElementById('productArea');
         const searchInput = document.getElementById('searchInput');
         const hiddenCatID = document.getElementById('hiddenCatID');
         const selectedCatDisplay = document.getElementById('selectedCat');
         // Get the heights of <nav> and #loginDiv
         const navHeight = document.querySelector('nav').offsetHeight; 
-        const loginDivHeight = loginDiv ? loginDiv.offsetHeight : 0;
         // Assign (Start) offsets to the sticky-top divs
         if (loginDiv) {
             loginDiv.style.top = `${navHeight}px`;
+            const loginDivHeight = loginDiv.offsetHeight;
+            searchBar.style.top = `${navHeight + loginDivHeight}px`;
+        } else {
+            searchBar.style.top = `${navHeight}px`;
         }
-        searchBar.style.top = `${navHeight + loginDivHeight}px`;
 
         // Monitor "Select Category" button
         if (browseBtn) {
@@ -217,6 +219,7 @@
             // Completely remove the Nag to free layout space
             if (loginDiv) loginDiv.remove();
             // Add the new Nav items
+            const navList = document.getElementById('navList');
             ['Dashboard', 'Basket', 'Logout'].forEach(item => {
                 const li = document.createElement('li');
                 li.classList.add('nav-item');
@@ -227,32 +230,37 @@
             // Uses !important to ensure CSS cannot overide whilst session is active
             searchBar.style.setProperty('top', `${navHeight}px`, 'important');
         });
+        // Listen for when a Bootstrap collapse starts showing
         // Lazy Loading implementation for Bootstrap cards
         // Only load Full Description and images when requested
-        // Listen for when a Bootstrap collapse starts showing
         document.addEventListener('show.bs.collapse', async (e) => {
-            const collapseDiv = e.target; // The div that is opening
-            const productId = collapseDiv.id.replace('details-', '');
-            const contentArea = collapseDiv.querySelector('.full-desc');
-            const carouselArea = collapseDiv.querySelector('.carousel-placeholder');
-
+            const productCard = e.target; 
+            const productId = productCard.id.replace('details-', '');
+            // Selecting the areas within the card to be populated
+            const descriptionArea = productCard.querySelector('.full-desc');
+            const carouselArea = productCard.querySelector('.carousel-placeholder');
+            const currentText = descriptionArea.innerText;
+            const needsLoading = currentText.includes('available') || currentText.includes('Loading') || currentText.includes('Failed');
             // Fetch Full Description if not loaded 
-            if (contentArea.innerText === 'No further details available.' || contentArea.innerText.includes('Loading')) {
-                contentArea.innerHTML = '<em>Loading details...</em>';
-                
+            if (needsLoading) {
+                descriptionArea.innerHTML = '<em>Refreshing product card...</em>';
                 try {
+                    // Get details from database
                     const response = await fetch(`api/fetch_product_details.php?id=${productId}`);
                     const data = await response.json();
-                    
-                    // Update expanded view with full description
-                    contentArea.innerText = data.long_description || 'No additional description provided.';
-                    
+                    // Update expanded view with full content
+                    descriptionArea.innerHTML = `
+                        <div class="d-flex justify-content-between border-bottom pb-2 mb-2">
+                            <strong class="text-primary">${data.name}</strong>
+                            <span class="text-success fw-bold">£${data.price}</span>
+                        </div>
+                        <div class="product-long-desc">${data.long_description || 'No further specs.'}</div>
+                    `;
                     // Inject new images into Carousel from database if they exist.
                     if (data.images && data.images.length > 0) {
                         let carouselHtml = `
                             <div id="carousel-${productId}" class="carousel slide" data-bs-ride="carousel">
                                 <div class="carousel-inner">`;
-                        
                         data.images.forEach((path, index) => {
                             carouselHtml += `
                                 <div class="carousel-item ${index === 0 ? 'active' : ''}">
@@ -284,8 +292,8 @@
                         carouselArea.innerHTML = '<p class="text-muted small text-center">No additional images available.</p>';
                     }
                 } catch (err) {
-                    console.error("LazyLoad Error:", err);
-                    contentArea.innerText = 'Failed to load details.';
+                    console.error("Card Update Error:", err);
+                    descriptionArea.innerHTML = '<span class="text-danger">Connection lost. Click to try again.</span>';
                 }
             }
         });
