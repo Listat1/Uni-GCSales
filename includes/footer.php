@@ -1,6 +1,6 @@
 </main>
 
-<footer>
+<footer class="sticky-bottom">
   Terms & Conditions | Privacy Policy | Contact
 </footer>
 

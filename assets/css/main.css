@@ -1,9 +1,8 @@
 /* assets/css/main.css */
 html, body {
-    height: 100dvh; /* Force exactly screen height */
+    min-height: 100vh; /* use all the screen */
     margin: 0; 
     font-family: 'Segoe UI', sans-serif;
-    overflow: hidden; /* Prevent the body from having its own scrollbar */
 }
 body {
     display: flex;
@@ -21,8 +20,6 @@ main {
     display: flex;
     flex-direction: column;
     padding: 1rem;
-    overflow-y: auto; /* This creates the scrollbar for the content area only */
-    
     /* Centering logic for the 1280px limit */
     width: 100%;
     max-width: 1280px;
@@ -48,22 +45,22 @@ footer {
     align-items: center;
     text-align: center;
     transition: all 0.3s ease;
-    margin-bottom: 1rem;
+    margin-bottom: 0; /* butt against LOGIN / SEARCH */
     background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
     color: #fefefe;
     font-size: 1.5rem;
     font-weight: 600;
     flex-direction: column;
-    z-index: 5;
+    /* z-index: 5; Dealt with by html (BS) */
     flex-shrink: 0;
     overflow: hidden; 
 }
-
+/* Style of categories when displayed inside .hero */
 #selectedCat {
     position: absolute;
     bottom: 10px;    /* 10px from the bottom edge */
-    left: 10%;       /* Aligned with your main text left-margin */
-    z-index: 6;      /* Higher than the image (0) and slogan (1) */
+    left: 10%;       /* Aligned with main text left-margin */
+    /* z-index: 6;      Higher than the image (0) and slogan (1) */
     
     font-size: 0.85rem;
     color: #ffeb3b;  /* Vibrant yellow for contrast */
@@ -87,7 +84,7 @@ footer {
     /* 'cover' prevents image warping/stretching */
     object-fit: cover; 
     object-position: center;
-    z-index: 0;
+    /* z-index: 0; */
     opacity: 0.85;
 }
 
@@ -108,18 +105,18 @@ footer {
 
 /* 1. The ID is the "Master" - set it to hidden by default */
 #heroCategories { 
-    display: none !important; 
+    display: none; 
 }
 
 .hero.show-categories #heroContent { display: none; }
 .hero.show-categories #heroCategories {  
-display: flex !important; 
+display: flex; 
     flex-wrap: wrap;
     gap: 10px;
     width: 100%;
     justify-content: center;
     padding: 1rem;
-    z-index: 20; /* Ensure it sits above the hero text */
+    /* z-index: 20; Ensure it sits above the hero text */
 }
 .hero.show-categories .hero-bg-img {
     opacity: 0;
@@ -150,19 +147,42 @@ display: flex !important;
 }
 .cat-grid-btn:hover { transform: scale(1.05); cursor: pointer; }
 
-/* --- Search & Interaction --- */
-.login-register, .search-bar { flex-shrink: 0; }
+/* -- Search & Interaction -- */
 
-.login-register {
+/* Unique Anchor for the Search Bar */
+#searchBar {
+    display: flex; 
+    gap: 5px;
+    margin-bottom: 1rem;
+    /* Top borders square to butt against LOG NAG or HERO */
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px; 
+    transition: top 0.3s ease;
+/* Test if content appears between entities */
+/* Let the section background show through */
+/* background-color: transparent;  */
+}
+
+.login-register, .search-bar { 
+    flex-shrink: 0;
+    background-color: var(--site-bg);
+    opacity: 1;
+    /* Make the background extend beyond rounded edges */
+    padding: 10px;
+/* Test if ghost line appears between divs */
+/* margin-top: -1px; */
+}
+
+#loginDiv {
     background-color: #2c3e50;
     color: #ecf0f1;
     padding: 0.75rem;
     text-align: center;
-    margin-bottom: 1rem;
-    border-radius: 8px;
+    margin-bottom: 0; /* Butt against the Search Bar */
+    border-radius: 0; /* Square Corners , 8px for rounded */
 }
-
-.search-bar { display: flex; gap: 5px; margin-bottom: 1rem; }
 .search-bar input {
     background-color: #34495e;
     color: #ecf0f1;
@@ -172,13 +192,14 @@ display: flex !important;
 
 /* -- List Area -- */
 .display-div {
-    flex: 1;
-    min-height: 300px; 
-    overflow-y: auto; 
-    background-color: #2c3e50;
-    color: #b8c2cc;
+    /* Assign min-height: to create buffer for sticky divs; */
+    margin-top: 1rem;
+    min-height: 25lh; 
     padding: 1rem;
     border-radius: 10px;
+    flex: 1;
+    background-color: #2c3e50;
+    color: #b8c2cc;
     box-shadow: 0 2px 10px rgba(0,0,0,0.3);
 }
 
@@ -213,12 +234,10 @@ footer {
         display: flex; 
         flex-direction: column;
         flex: 1; /* Force main to fill the gap on mobile */
-        overflow-y: auto; /* Ensure scrolling is still enabled */
     }
     
     .display-div {
         flex: 1; 
-        overflow-y: auto;
         min-height: 300px;
         margin-bottom: 1rem;
     }

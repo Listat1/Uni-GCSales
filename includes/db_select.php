@@ -1,7 +1,7 @@
 <?php
 // includes/db_select.php
 /**
- * Executes a prepared statement and returns all results
+ * General prepared statement execution, returns all results
  * @param PDO $db The database connection
  * @param string $sql The SQL query with placeholders (:name)
  * @param array $params Associative array of values to bind [:name => value]
@@ -13,9 +13,12 @@ function dbSelect($db, $sql, $params = []) {
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
+
+// Get a list of products from selected category that match search string
+// Used by JS:Livesearch
 function searchProducts($db, $q, $cat = '') {
  $sql = "SELECT 
-            p.product_id, /* Unique reference ESSENTIAL for BS card expansion */
+            p.product_id,
             p.name,
             p.description, 
             p.price, 

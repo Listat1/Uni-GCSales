@@ -29,7 +29,7 @@
 
 <body>
     <header>
-        <nav class="navbar navbar-expand-lg bg-body-tertiary border-bottom">
+        <nav class="navbar navbar-expand-lg bg-body-tertiary border-bottom fixed-top">
             <div class="container">
                 <a class="navbar-brand" href="index.php">Grimsby & Clee Sells</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent"
@@ -52,6 +52,6 @@
 
     <main class="container">
         <?php 
-            // Comment include line to disable debugging descibed:
+            // Comment 'include' line to disable debugging descibed:
             include 'includes/debug_get.php'; 
         ?>

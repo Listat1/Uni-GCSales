@@ -1,0 +1,6 @@
+# Deny all direct web access to files in this folder
+Order deny,allow
+Deny from all
+# Introduced after it was discovered that accessing db_select.php resulted in a blank 
+# page, mis-spelling it reulted in an error page. Informing anytine who access the page 
+# with a correct url, learns something about the server construction (ie: data exists here)

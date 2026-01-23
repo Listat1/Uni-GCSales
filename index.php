@@ -35,12 +35,12 @@
     </div>    
 </section>
 
-<section class="login-register" id="loginDiv">
+<section class="login-register sticky-top" id="loginDiv">
     <button class="btn me-2" id="loginBtn">Login</button>
     <button class="btn btn-outline-light">Register</button>
 </section>
 
-<section class="search-bar" id="searchBar">
+<section class="search-bar sticky-top" id="searchBar">
     <form id="searchForm" action="index.php" method="GET" class="w-100 d-flex">
         <input type="text" name="q" id="searchInput" class="form-control" 
             value="<?= htmlspecialchars($q) ?>" placeholder="Search for products..." 
@@ -101,8 +101,16 @@
         const searchInput = document.getElementById('searchInput');
         const hiddenCatID = document.getElementById('hiddenCatID');
         const selectedCatDisplay = document.getElementById('selectedCat');
+        // Get the heights of <nav> and #loginDiv
+        const navHeight = document.querySelector('nav').offsetHeight; 
+        const loginDivHeight = loginDiv ? loginDiv.offsetHeight : 0;
+        // Assign (Start) offsets to the sticky-top divs
+        if (loginDiv) {
+            loginDiv.style.top = `${navHeight}px`;
+        }
+        searchBar.style.top = `${navHeight + loginDivHeight}px`;
 
-        // Monitor "Select Catagory" button
+        // Monitor "Select Category" button
         if (browseBtn) {
             browseBtn.addEventListener('click', (e) => {
                 // console.log("Browse Button Clicked!"); // Debug: Displays in Browsers Console
@@ -140,7 +148,7 @@
                 return;
             }
             try {
-                // Fetching results from the API service
+                // Fetch results from the API
                 const response = await fetch(`api/fetch_product_list.php?q=${encodeURIComponent(q)}&cat=${cat}`);
                 const products = await response.json();
                 productArea.innerHTML = "";
@@ -206,14 +214,18 @@
         searchInput.addEventListener('input', triggerLiveSearch);
 
         loginBtn.addEventListener('click', () => {
-            loginDiv.style.display = 'none';
-            ['Dashboard','Basket','Logout'].forEach(item => {
+            // Completely remove the Nag to free layout space
+            if (loginDiv) loginDiv.remove();
+            // Add the new Nav items
+            ['Dashboard', 'Basket', 'Logout'].forEach(item => {
                 const li = document.createElement('li');
                 li.classList.add('nav-item');
                 li.innerHTML = `<a class="nav-link" href="#">${item}</a>`;
                 navList.appendChild(li);
-                if(item === 'Logout') li.addEventListener('click', () => location.reload());
             });
+            // Update Search Bar position to snap flush against <Nav>
+            // Uses !important to ensure CSS cannot overide whilst session is active
+            searchBar.style.setProperty('top', `${navHeight}px`, 'important');
         });
         // Lazy Loading implementation for Bootstrap cards
         // Only load Full Description and images when requested
@@ -232,11 +244,10 @@
                     const response = await fetch(`api/fetch_product_details.php?id=${productId}`);
                     const data = await response.json();
                     
-                    // Update the expanded view with the real data
+                    // Update expanded view with full description
                     contentArea.innerText = data.long_description || 'No additional description provided.';
                     
-                    // Inject new images into Carousel
-                    // If images exist in the database, build the Bootstrap Carousel structure
+                    // Inject new images into Carousel from database if they exist.
                     if (data.images && data.images.length > 0) {
                         let carouselHtml = `
                             <div id="carousel-${productId}" class="carousel slide" data-bs-ride="carousel">
@@ -248,9 +259,8 @@
                                     <img src="${path}" class="d-block w-100 rounded-top" style="height:250px; object-fit:contain; background:#000;">
                                 </div>`;
                         });
-
                         carouselHtml += `
-                                </div>
+                            </div>
                                 <button class="carousel-control-prev" type="button" data-bs-target="#carousel-${productId}" data-bs-slide="prev">
                                     <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                                 </button>
@@ -261,29 +271,26 @@
                             <div class="bg-dark text-white-50 small py-1 rounded-bottom border-top border-secondary text-center">
                                 Image <span id="count-${productId}">1</span> of ${data.images.length}
                             </div>`;
-                        
                         carouselArea.innerHTML = carouselHtml;
-
-                        // Attach listener to update the numbers on slide
+                        // Listener to update the numbers on slide
                         const carouselEl = document.getElementById(`carousel-${productId}`);
                         const countSpan = document.getElementById(`count-${productId}`);
-                        
                         carouselEl.addEventListener('slide.bs.carousel', (event) => {
                             // event.to is the index of the next item (0-based)
                             countSpan.innerText = event.to + 1;
                         });
-
-                    } else {
+                    }
+                    else {
                         carouselArea.innerHTML = '<p class="text-muted small text-center">No additional images available.</p>';
                     }
-                    
                 } catch (err) {
                     console.error("LazyLoad Error:", err);
                     contentArea.innerText = 'Failed to load details.';
                 }
             }
         });
-    }); // End of DOMContentLoaded
+    // End of DOMContentLoaded
+    }); 
 </script>
 <?php 
     // Get Footer
