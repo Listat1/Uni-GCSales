@@ -89,10 +89,16 @@
         // Monitor "Select Category" button
         if (browseBtn) {
             browseBtn.addEventListener('click', (e) => {
-                // console.log("Browse Button Clicked!"); // Debug: Displays in Browsers Console
                 e.preventDefault(); // Stop form (container) from submitting
                 heroBanner.classList.toggle('show-categories');
                 browseBtn.classList.toggle('btn-active');
+                // Scroll to top of screen if categories are displayed
+                if (heroBanner.classList.contains('show-categories')) {
+                    window.scrollTo({
+                        top: 0,
+                        behavior: 'smooth' 
+                    });
+                }
             });
         }
         // Display Category Selection
@@ -115,7 +121,6 @@
         });
 
         // Fetch data if 3+ characters typed in search bar
-// Fetch data if 3+ characters typed in search bar
         async function triggerLiveSearch() {
             const q = searchInput.value.trim();
             const cat = hiddenCatID.value;
