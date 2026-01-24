@@ -5,6 +5,7 @@
     $db = getDatabaseConnection();
     // Get List of filtered products (If any)
     require_once 'includes/db_select.php';
+    require_once 'includes/components.php'; 
     $q = $_GET['q'] ?? '';
     $cat = $_GET['cat'] ?? '';
     $products = (empty($q) && empty($cat)) ? [] : searchProducts($db, $q, $cat);
@@ -56,34 +57,7 @@
     <?php else: ?>
     <?php foreach ($products as $p): ?>
         <div class="result-card mb-3">
-            <div class="card-body">
-                <div class="d-flex gap-3">
-                    <img src="<?= htmlspecialchars($p['display_img']) ?>" class="rounded thumb-img" style="width:110px; height:110px; object-fit:cover;">
-                    <div class="flex-grow-1">
-                        <!-- Components displayed on card: -->
-                        <h6 class="mb-1 fw-bold"><?= htmlspecialchars($p['name']) ?></h6>
-                        <h5 class="mb-1">£<?= htmlspecialchars($p['price']) ?></h5>
-                        <p class="mb-2 small text-secondary"><?= htmlspecialchars($p['description']) ?></p>
-                        <button 
-                        class="btn btn-sm btn-outline-primary" 
-                            data-bs-toggle="collapse" 
-                            data-bs-target="#details-<?= $p['product_id'] ?>">
-                            View Details
-                        </button>
-                    </div>
-                </div>
-                <div class="collapse" id="details-<?= $p['product_id'] ?>">
-                    <hr>
-                    <div class="carousel-placeholder bg-dark text-center py-4 mb-3 rounded">
-                        [Carousel Swiper Here]
-                    </div>
-                    <p class="full-desc"><?= htmlspecialchars($p['long_description'] ?? 'No further details available.') ?></p>
-                    <div class="d-flex gap-2">
-                        <button class="btn btn-success flex-grow-1">Buy Now</button>
-                        <button class="btn btn-primary flex-grow-1">Add to Basket</button>
-                    </div>
-                </div>
-            </div>
+            <?= renderProductCard($p) ?>
         </div>
     <?php endforeach; ?>
     <?php endif; ?>
@@ -141,73 +115,37 @@
         });
 
         // Fetch data if 3+ characters typed in search bar
+// Fetch data if 3+ characters typed in search bar
         async function triggerLiveSearch() {
             const q = searchInput.value.trim();
             const cat = hiddenCatID.value;
-            // Only start pulling list if 3 or more characters
             if (q.length < 3) {
                 productArea.innerHTML = q.length > 0 ? "Keep typing..." : "Search Results...";
                 return;
             }
             try {
-                // Fetch results from the API
+                // Get formatted search results array
                 const response = await fetch(`api/fetch_product_list.php?q=${encodeURIComponent(q)}&cat=${cat}`);
                 const products = await response.json();
+                
+                // Clear the BS.collapse registry and rebuild it
                 productArea.innerHTML = "";
+                
                 if (products.length > 0) {
-                    // Build list of products from search results
+                    // Insert each result-card
                     products.forEach(p => {
-                        const card = document.createElement("div");
-                        card.className = "result-card mb-3";
-                        // Using p.display_img, p.description, and p.price from SQL keys
-                        // (var) card.innerHTML = productArea card structure, small for product list,
-                        // expanded when user selects an item. CSS controls sizing:
-                        const collapseId = `details-${p.product_id}`; 
-                        card.innerHTML = `
-                            <div class="card-body">
-                                <div class="d-flex gap-3">
-                                    <img src="${p.display_img}" class="rounded thumb-img" style="width:110px; height:110px; object-fit:cover;">
-                                    <div class="flex-grow-1">
-                                        <h6 class="mb-1 fw-bold">${p.name}</h6>
-                                        
-                                        <div class="mb-1">
-                                            <span class="badge bg-success">£${p.price}</span>
-                                        </div>
-                                        <p class="mb-2 small text-secondary">${p.description}</p>
-                                        <button class="btn btn-sm btn-outline-primary" 
-                                                data-bs-toggle="collapse" 
-                                                data-bs-target="#${collapseId}">
-                                            View Details
-                                        </button>
-                                    </div>
-                                </div>
-
-                                <div class="collapse" id="${collapseId}">
-                                    <hr>
-                                    <div class="carousel-placeholder bg-dark text-center py-4 mb-3 rounded">
-                                        [Carousel Swiper Here]
-                                    </div>
-                                    <p class="full-desc">${p.long_description || 'No further details available.'}</p>
-                                    <div class="d-flex gap-2">
-                                        <button class="btn btn-success flex-grow-1">Buy Now</button>
-                                        <button class="btn btn-primary flex-grow-1">Add to Basket</button>
-                                    </div>
-                                </div>
-                            </div>
-                        `;
-                        productArea.appendChild(card);
+                        const cardContainer = document.createElement("div");
+                        cardContainer.className = "result-card mb-3";
+                        cardContainer.innerHTML = p.card_html;
+                        productArea.appendChild(cardContainer);
+                        
+                        // Notify BS .collapse of new card - Inside the loop!
+                        new bootstrap.Collapse(cardContainer.querySelector('.collapse'), { toggle: false });
                     });
-
-                    // Manually initialise Bootstrap Collapse for the newly injected HTML
-                    const collapseElements = productArea.querySelectorAll('.collapse');
-                    collapseElements.forEach(el => {
-                        new bootstrap.Collapse(el, { toggle: false });
-                    });
-
                 } else {
-                    productArea.innerHTML = "<em>No results found in database. Press Enter to refresh.</em>";
+                    productArea.innerHTML = "<em>No results found. Press Enter to refresh.</em>";
                 }
-            } catch (err) {
+            } catch (err) { 
                 console.error("LiveSearch Error:", err);
                 productArea.innerHTML = "<em>Error connecting to search service.</em>";
             }
