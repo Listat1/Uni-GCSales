@@ -1,4 +1,5 @@
 <?php
+// api/fetch_product_list.php
 require_once __DIR__ . '/../includes/dbconnection.php';
 require_once __DIR__ . '/../includes/db_select.php';
 require_once __DIR__ . '/../includes/components.php'; 

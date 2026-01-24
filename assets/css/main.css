@@ -63,7 +63,7 @@ footer {
 
 #heroContent {
     position: relative; 
-    z-index: 2;
+    /* z-index: 2; */
     text-align: left;
     width: 80%;
     /* Fix: Bring back the punchy size */
@@ -143,6 +143,7 @@ footer {
 /* Test if ghost line appears between divs */
 /* margin-top: -1px; */
 }
+
 
 #loginDiv {
     background-color: #2c3e50;
@@ -365,3 +366,46 @@ footer {
 
 .result-card { background: var(--card-bg); }
 .result-desc { color: var(--site-text); }
+
+/* --- Auth Modal Styling --- */
+.auth-modal-content {
+    background-color: var(--container-bg);
+    color: var(--site-text);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+}
+
+.modal-header {
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.auth-label {
+    font-size: 0.85rem;
+    opacity: 0.8;
+    color: var(--site-text);
+}
+
+.auth-input {
+    background-color: var(--btn-secondary) !important;
+    color: var(--site-text) !important;
+    border: 1px solid rgba(0,0,0,0.2);
+}
+
+.auth-input:focus {
+    background-color: var(--btn-secondary);
+    color: var(--site-text);
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.auth-toggle-text {
+    font-size: 0.9rem;
+    opacity: 0.7;
+}
+
+/* Light Mode specific tweak for the close button */
+[data-bs-theme="light"] #modalCloseBtn {
+    filter: none;
+}
+[data-bs-theme="dark"] #modalCloseBtn {
+    filter: invert(1) grayscale(100%) brightness(200%);
+}
