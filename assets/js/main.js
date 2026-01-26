@@ -1,4 +1,38 @@
-const selectedCatDisplay = document.getElementById('selectedCat');
+// Global Clickable items Listener
+document.addEventListener('click', async (e) => {
+    
+    const logoutTrigger = e.target.closest('#logoutBtn');
+    if (logoutTrigger) {
+        e.preventDefault(); // Intercept default anchor behavior
+        try {
+            const response = await fetch('api/proc_logout.php');
+            const result = await response.json();
+            
+            if (result.success) {
+                // Perform a Hard Reset of the UI state via reload
+                window.location.reload();
+            }
+        } catch (err) {
+            console.error("Logout Sequence Error:", err);
+        }
+    }
+   
+    // Check for Category Selection (Delegated)
+    const selectedCatDisplay = document.getElementById('selectedCat');
+    const catBtn = e.target.closest('.cat-grid-btn');
+    if (catBtn) {
+        const catID = catBtn.getAttribute('data-id');
+        const catName = catBtn.innerText;
+        
+        selectedCatDisplay.innerText = "Current Category: " + catName;
+        document.getElementById('hiddenCatID').value = catID;
+
+        heroBanner.classList.remove('show-categories');
+        if (browseBtn) browseBtn.classList.remove('btn-active');
+        
+        triggerLiveSearch();
+    }
+});
 // Monitor "Login-Register <div>" - Launches Auth Modal
 const loginDiv = document.getElementById('loginDiv');
 if (loginDiv) {
@@ -76,49 +110,53 @@ async function triggerLiveSearch() {
     }
 }
 // Action taken when event with BSclass:collapse triggered.
-// Scoped specifically to productArea to avoid Navbar collisions. (.collapse class)
-// Lazy Loading implementation for Bootstrap cards where 
-// Full Description and images loaded only when requested.
+// Scoped specifically to productArea to avoid Navbar collisions.
+// Lazy Loading implementation: Full Details and images loaded only when requested.
 if (productArea) {
     productArea.addEventListener('show.bs.collapse', async (e) => {
-        const productCard = e.target;
-        const productId = productCard.id.replace('details-', '');
-        const descriptionArea = productCard.querySelector('.full-desc');
-        const carouselArea = productCard.querySelector('.carousel-placeholder');
+        // The specific collapse element being opened
+        const detailContainer = e.target; 
+        const productId = detailContainer.id.replace('details-', '');
+        const detailBody = detailContainer.querySelector('.full-desc');
+        const carouselArea = detailContainer.querySelector('.carousel-placeholder');
 
-        // Skip if no description area exists
-        if (!descriptionArea) return;
+        // Skip if no detail body exists in DOM
+        if (!detailBody) return;
 
-        const currentText = descriptionArea.innerText;
-        const pending = 
-            currentText.includes('available') || 
-            currentText.includes('Loading') || 
-            currentText.includes('Failed');
+        // Test status with HTML5 Data Attribute
+        const status = detailBody.getAttribute('data-status');
 
-        if (pending) {
-            descriptionArea.innerHTML = '<em>Refreshing product card...</em>';
+        if (status === 'pending') {
+            // Immediately transition to 'loading' to prevent double-triggers (Debounce)
+            detailBody.setAttribute('data-status', 'loading');
+            detailBody.innerHTML = '<em>Refreshing product card...</em>';
+
             try {
                 const response = await fetch(`api/fetch_product_details.php?id=${productId}`);
                 const data = await response.json();
                 
-                descriptionArea.innerHTML = `
+                // Inject sanitised data from API
+                detailBody.innerHTML = `
                     <div class="d-flex justify-content-between border-bottom pb-2 mb-2">
                         <strong class="text-primary">${data.name}</strong>
                         <span class="text-success fw-bold">£${data.price}</span>
                     </div>
-                    <div class="product-long-desc">${data.long_description || 'No further specs.'}</div>
+                    <div class="product-long-desc">${data.long_description}</div>
                 `;
 
+                // Carousel Implementation
                 if (data.images && data.images.length > 0) {
                     let carouselHtml = `
                         <div id="carousel-${productId}" class="carousel slide" data-bs-ride="carousel">
                             <div class="carousel-inner">`;
+                    
                     data.images.forEach((path, index) => {
                         carouselHtml += `
                             <div class="carousel-item ${index === 0 ? 'active' : ''}">
                                 <img src="${path}" class="d-block w-100 rounded-top" style="height:250px; object-fit:contain; background:#000;">
                             </div>`;
                     });
+
                     carouselHtml += `
                         </div>
                             <button class="carousel-control-prev" type="button" data-bs-target="#carousel-${productId}" data-bs-slide="prev">
@@ -131,6 +169,7 @@ if (productArea) {
                         <div class="bg-dark text-white-50 small py-1 rounded-bottom border-top border-secondary text-center">
                             Image <span id="count-${productId}">1</span> of ${data.images.length}
                         </div>`;
+                    
                     carouselArea.innerHTML = carouselHtml;
                     
                     const carouselEl = document.getElementById(`carousel-${productId}`);
@@ -141,43 +180,16 @@ if (productArea) {
                 } else {
                     carouselArea.innerHTML = '<p class="text-muted small text-center">No additional images available.</p>';
                 }
+
+                // Set Status - HTML5 Data Attribute - to completed
+                detailBody.setAttribute('data-status', 'complete');
+
             } catch (err) {
                 console.error("Card Update Error:", err);
-                descriptionArea.innerHTML = '<span class="text-danger">Connection lost. Click to try again.</span>';
+                // Reset state on error so the user can attempt a retry
+                detailBody.setAttribute('data-status', 'pending');
+                detailBody.innerHTML = '<span class="text-danger">Connection lost. Click to try again.</span>';
             }
         }
     });
 }
-
-// Clickable items Listener
-document.addEventListener('click', async (e) => {
-    // Check for Logout via the ID envelope
-    const logoutBtn = e.target.closest('#logoutBtn');
-    if (logoutBtn) {
-        e.preventDefault();
-        try {
-            const response = await fetch('api/proc_logout.php');
-            const result = await response.json();
-            if (result.success) {
-                window.location.reload();
-            }
-        } catch (err) {
-            console.error("Logout failed:", err);
-        }
-    }
-
-    // Check for Category Selection (Delegated)
-    const catBtn = e.target.closest('.cat-grid-btn');
-    if (catBtn) {
-        const catID = catBtn.getAttribute('data-id');
-        const catName = catBtn.innerText;
-        
-        selectedCatDisplay.innerText = "Current Category: " + catName;
-        document.getElementById('hiddenCatID').value = catID;
-
-        heroBanner.classList.remove('show-categories');
-        if (browseBtn) browseBtn.classList.remove('btn-active');
-        
-        triggerLiveSearch();
-    }
-});

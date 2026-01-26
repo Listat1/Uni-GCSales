@@ -26,6 +26,10 @@ if (!$product) {
     echo json_encode(['error' => 'Product not found']);
     exit;
 }
+// If (long) description provided then ? long_description : default_message
+if (empty(trim($product['long_description']))) {
+    $product['long_description'] = '<em class="text-muted">No further details available for this item.</em>';
+}
 // Fetch all images for this product and place in array (for carousel)
 $imgStmt = $db->prepare("SELECT file_path FROM product_images WHERE product_id = ? ORDER BY sort_order ASC");
 $imgStmt->execute([$id]);
