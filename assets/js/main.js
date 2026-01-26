@@ -1,13 +1,18 @@
 // Global Clickable items Listener
 document.addEventListener('click', async (e) => {
     
+    if (e.target.id === 'loginBtn' || e.target.id === 'registerBtn') {
+            setAuthView(e.target.id === 'loginBtn' ? 'login' : 'register');
+            authModal.show();
+            return;
+    }
+    // Actions to take after logout
     const logoutTrigger = e.target.closest('#logoutBtn');
     if (logoutTrigger) {
-        e.preventDefault(); // Intercept default anchor behavior
+        e.preventDefault();
         try {
             const response = await fetch('api/proc_logout.php');
             const result = await response.json();
-            
             if (result.success) {
                 // Perform a Hard Reset of the UI state via reload
                 window.location.reload();
@@ -15,38 +20,27 @@ document.addEventListener('click', async (e) => {
         } catch (err) {
             console.error("Logout Sequence Error:", err);
         }
+        return;
     }
-   
     // Check for Category Selection (Delegated)
-    const selectedCatDisplay = document.getElementById('selectedCat');
     const catBtn = e.target.closest('.cat-grid-btn');
-    if (catBtn) {
+    if (catBtn) { 
         const catID = catBtn.getAttribute('data-id');
-        const catName = catBtn.innerText;
+        const catName = catBtn.innerText;  
+        const display = document.getElementById('selectedCat');
+        if (display) display.innerText = "Current Category: " + catName;
         
-        selectedCatDisplay.innerText = "Current Category: " + catName;
         document.getElementById('hiddenCatID').value = catID;
-
         heroBanner.classList.remove('show-categories');
         if (browseBtn) browseBtn.classList.remove('btn-active');
         
         triggerLiveSearch();
-    }
+    }       
 });
-// Monitor "Login-Register <div>" - Launches Auth Modal
-const loginDiv = document.getElementById('loginDiv');
-if (loginDiv) {
-    loginDiv.addEventListener('click', (e) => {
-        const id = e.target.id;
-        if (id === 'loginBtn' || id === 'registerBtn') {
-            setAuthView(id === 'loginBtn' ? 'login' : 'register');
-            authModal.show();
-        }
-    });
-}
 // Actions to take after login is confirmed
 function LoginNavUpdate() {
-    if (typeof loginDiv !== 'undefined' && loginDiv) loginDiv.remove();
+    const loginContainer = document.getElementById('loginDiv');
+    if (loginContainer) loginContainer.remove();    
     
     const navList = document.getElementById('navList');
     if (navList) {
