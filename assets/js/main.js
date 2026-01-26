@@ -44,12 +44,18 @@ function LoginNavUpdate() {
     
     const navList = document.getElementById('navList');
     if (navList) {
-        ['Dashboard', 'Basket', 'Logout'].forEach(item => {
+        navList.innerHTML = ''; // Fresh start
+        const navItems = [
+            { label: 'Home',      url: 'index.php',     id: '' },
+            { label: 'Dashboard', url: 'dashboard.php', id: '' },
+            { label: 'Basket',    url: 'basket.php',    id: '' },
+            { label: 'Logout',    url: '#',             id: 'logoutBtn' }
+        ];
+        navItems.forEach(item => {
             const li = document.createElement('li');
-            li.classList.add('nav-item');
-            // Add Logout with #id
-            const idAttr = item === 'Logout' ? 'id="logoutBtn"' : '';
-            li.innerHTML = `<a class="nav-link" ${idAttr} href="#">${item}</a>`;
+            li.className = 'nav-item';
+            const idAttr = item.id ? `id="${item.id}"` : '';
+            li.innerHTML = `<a class="nav-link" ${idAttr} href="${item.url}">${item.label}</a>`;
             navList.appendChild(li);
         });
     }
