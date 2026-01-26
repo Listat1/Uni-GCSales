@@ -52,12 +52,14 @@ if ($action === 'register') {
 }
 
 // --- LOGIN LOGIC ---
+// Test credentials, confirm if successful and assign a user level set $_SESSION[user_id,user_name,user_level]
 if ($action === 'login') {
     $username = htmlspecialchars(trim($_POST['username'] ?? ''));
     $password = $_POST['password'] ?? '';
 
+    // Join with our new roles table to get the numeric level
     $stmt = $db->prepare("
-        SELECT u.user_id, u.first_name, p.password_hash 
+        SELECT u.user_id, u.first_name, u.level, p.password_hash 
         FROM users u 
         JOIN passwords p ON u.user_id = p.user_id 
         WHERE u.username = ? AND u.is_active = 1
@@ -68,9 +70,10 @@ if ($action === 'login') {
     if ($user && password_verify($password, $user['password_hash'])) {
         $_SESSION['user_id'] = $user['user_id'];
         $_SESSION['user_name'] = $user['first_name'];
+        $_SESSION['user_level'] = $user['level'];
         echo json_encode(['success' => true]);
     } else {
-        echo json_encode(['success' => false, 'message' => 'Invalid username or password.']);
+        echo json_encode(['success' => false, 'message' => 'Invalid credentials.']);
     }
     exit;
 }

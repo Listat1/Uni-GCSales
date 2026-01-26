@@ -71,8 +71,8 @@
 <script>
     // After Document has loaded:
     document.addEventListener('DOMContentLoaded', () => {
-    <?php include 'assets/js/main.js'; ?>
-    <?php include 'assets/js/auth.js'; ?>    
+        <?php include 'assets/js/main.js'; ?>
+        <?php include 'assets/js/auth.js'; ?>    
     });     
 </script>
 <?php 

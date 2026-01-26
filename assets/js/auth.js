@@ -21,21 +21,6 @@ function setAuthView(view) {
     }
 }
 
-// 3. Attach Listeners to the buttons in index.php
-if (loginBtn) {
-    loginBtn.addEventListener('click', () => {
-        setAuthView('login');
-        authModal.show();
-    });
-}
-
-if (registerBtn) {
-    registerBtn.addEventListener('click', () => {
-        setAuthView('register');
-        authModal.show();
-    });
-}
-
 // 4. Handle Form Submissions (The Brains)
 [loginForm, registerForm].forEach(form => {
     if(!form) return;
