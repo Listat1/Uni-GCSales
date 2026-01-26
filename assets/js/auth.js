@@ -1,14 +1,18 @@
 // assets/js/auth.js
-
-// 1. Grab the Modal elements
-const authModalEl = document.getElementById('authModal');
-const authModal = authModalEl ? new bootstrap.Modal(authModalEl) : null;
 const loginForm = document.getElementById('loginForm');
 const registerForm = document.getElementById('registerForm');
-const toggleAuthBtn = document.getElementById('toggleAuth');
-const modalTitle = document.getElementById('modalTitle');
-
-// 2. View Switcher Logic
+// Assign Login / Register switch links in Modal
+document.addEventListener('click', (e) => {
+    if (e.target.id === 'linkToRegister') {
+        e.preventDefault();
+        setAuthView('register');
+    }
+    if (e.target.id === 'linkToLogin') {
+        e.preventDefault();
+        setAuthView('login');
+    }
+});
+// Login and Register switcher
 function setAuthView(view) {
     if (view === 'register') {
         loginForm.classList.add('d-none');
@@ -20,8 +24,10 @@ function setAuthView(view) {
         modalTitle.innerText = "G&C Sales: Login";
     }
 }
-
-// 4. Handle Form Submissions (The Brains)
+// Manage Login / Register Process
+const modalObject = document.getElementById('authModal');
+const modalTitle = document.getElementById('modalTitle'); // Move this up
+const authModal = modalObject ? new bootstrap.Modal(modalObject) : null;
 [loginForm, registerForm].forEach(form => {
     if(!form) return;
     form.addEventListener('submit', async (e) => {
@@ -36,21 +42,10 @@ function setAuthView(view) {
         const result = await response.json();
 
         if (result.success) {
-            // Trigger your "Nag Removal" logic
-            LoginNavUpdate(); // Update the NAV bar
-            authModal.hide(); // Remove the login screen 
+            LoginNavUpdate();
+            authModal.hide(); 
         } else {
-            alert(result.message); // Replace with your authFeedback div later
+            alert(result.message);
         }
     });
-});
-document.addEventListener('click', (e) => {
-    if (e.target.id === 'linkToRegister') {
-        e.preventDefault();
-        setAuthView('register');
-    }
-    if (e.target.id === 'linkToLogin') {
-        e.preventDefault();
-        setAuthView('login');
-    }
 });

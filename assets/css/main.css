@@ -73,7 +73,7 @@ footer {
     text-shadow: 2px 2px 12px rgba(0, 0, 0, 0.9);
 }
 
-/* --- Toggled State (Categories Open) --- */
+/* -- Toggled State (Categories Open) -- */
 .hero.show-categories {
     justify-content: center; 
 }
@@ -103,7 +103,7 @@ footer {
     margin: 0 auto;
 }
 
-/* --- Categories & Buttons --- */
+/* -- Categories & Buttons -- */
 .cat-grid-btn {
     flex: 1 1 30%;
     padding: 15px;
@@ -140,7 +140,6 @@ footer {
 /* margin-top: -1px; */
 }
 
-
 #loginDiv {
     background-color: #2c3e50;
     color: #ecf0f1;
@@ -169,7 +168,7 @@ footer {
     box-shadow: 0 2px 10px rgba(0,0,0,0.3);
 }
 
-/* --- Footer --- */
+/* -- Footer -- */
 footer {
     background-color: #1a252f;
     color: #ecf0f1;
@@ -181,12 +180,12 @@ footer {
     flex-shrink: 0;
 }
 
-/* --- Interaction States --- */
+/* -- Interaction States -- */
 #loginBtn { background-color: #2e7d32; color: #f0f0f0; }
 #browseBtn { background-color: #6a1b9a; color: #ffffff; }
 .btn-active { background-color: #0d6efd !important; color: white; }
 
-/* --- RESPONSIVENESS --- */
+/* -- RESPONSIVENESS -- */
 
 /* Vertical fix for short screens */
 @media (max-height: 650px) {
@@ -225,7 +224,7 @@ footer {
     }
 }
 
-/* --- SEARCH RESULT CARD STYLES --- */
+/* -- SEARCH RESULT CARD STYLES -- */
 .result-card {
     display: flex;
     flex-direction: column; /* Changed from row to allow vertical expansion for carousel */
@@ -362,7 +361,7 @@ footer {
 .result-card { background: var(--card-bg); }
 .result-desc { color: var(--site-text); }
 
-/* --- Auth Modal Styling --- */
+/* -- Auth Modal Styling -- */
 .auth-modal-content {
     background-color: var(--container-bg);
     color: var(--site-text);
