@@ -1,0 +1,37 @@
+Sample Usage:
+---- SETUP ----
+<?php
+session_start();
+require_once 'includes/debug_helper.php';
+
+
+---- Implementation / Usage ----
+// Always active during development
+>>> release_the_hounds(); 
+
+require_once 'includes/dbconnection.php';
+$pdo = getDatabaseConnection();
+
+$user_id = $_SESSION['user_id'];
+
+try {
+    // 1. Get User Profile
+    $stmt = $pdo->prepare("SELECT * FROM users WHERE user_id = ?");
+    $stmt->execute([$user_id]);
+    $user = $stmt->fetch();
+    
+    // Specifically target the profile data for a trace
+>>>    trace_database($user, 'User Profile Data');
+
+    // 2. Get Products
+    $stmt = $pdo->prepare("SELECT * FROM products WHERE seller_id = ?");
+    $stmt->execute([$user_id]);
+    $myProducts = $stmt->fetchAll();
+    
+    // Specifically target the listings
+>>>    trace_database($myProducts, 'Listed Items');
+
+} catch (PDOException $e) {
+    die("Database Error: " . $e->getMessage());
+}
+?>

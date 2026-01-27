@@ -1,0 +1,5 @@
+Initially set up with Javascript, the NAV bar contents have been migrated to PHP.
+Javascript is great for manipulating pages when loaded, but is not as effective when state is taken into consideration.
+The Nav Bar conetents are dependent on the whether the user is logged in when the bar is created.
+When a page is refreshed, without the exstablished state being recognised, content can only default to the fixed status, then adjusted by javascript.
+The migration resolves this by checking state before deciding on the content to be included:

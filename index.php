@@ -10,6 +10,8 @@
     $cat = $_GET['cat'] ?? '';
     $products = (empty($q) && empty($cat)) ? [] : searchProducts($db, $q, $cat);
     // Get Header
+    $pageTitle = "Grimsby and Clee Sells";
+    $pageID = "home";
     include 'includes/header.php';
 ?>
 
@@ -65,17 +67,11 @@
     <?php endif; ?>
 </section>
 <?php 
+    include 'includes/footer.php';
     // Initial Display kept hidden until required (login selected)
     include 'includes/mod_auth.php';
- ?>
-<script>
-    // After Document has loaded:
-    document.addEventListener('DOMContentLoaded', () => {
-        <?php include 'assets/js/main.js'; ?>
-        <?php include 'assets/js/auth.js'; ?>    
-    });     
-</script>
-<?php 
-    // Get Footer
-    include 'includes/footer.php';
 ?>
+<script>
+    <?php include 'assets/js/main.js'; ?>
+    <?php include 'assets/js/auth.js'; ?>    
+</script>

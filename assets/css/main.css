@@ -403,3 +403,16 @@ footer {
 [data-bs-theme="dark"] #modalCloseBtn {
     filter: invert(1) grayscale(100%) brightness(200%);
 }
+
+/* -- Dashboard -- */
+/* Arrows in Dashboard collapse */
+/* Base state: Arrow is pointing down (Expanded) */
+.collapse-icon {
+    display: inline-block;
+    transition: transform 0.3s ease; /* Adds the animation you wanted! */
+}
+
+/* When the trigger has the '.collapsed' class, rotate it */
+[data-bs-toggle="collapse"].collapsed .collapse-icon {
+    transform: rotate(-90deg); /* Points it to the right ▶ */
+}
