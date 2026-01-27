@@ -1,12 +1,10 @@
 <?php
 // api/proc_logout.php
+// Connect to current session
 session_start();
-
-// 1. Clear all session variables
+// Clear all session variables
 $_SESSION = [];
-
-// 2. Kill the session cookie in the browser
-// This ensures the browser doesn't try to send the ID back later
+// Kill the session cookie in the browser
 if (ini_get("session.use_cookies")) {
     $params = session_get_cookie_params();
     setcookie(session_name(), '', time() - 42000,
@@ -14,11 +12,9 @@ if (ini_get("session.use_cookies")) {
         $params["secure"], $params["httponly"]
     );
 }
-
-// 3. Destroy the session on the server
+// Kill session on server
 session_destroy();
-
-// 4. Send back the success signal
+// Inform calling routine logout is complete
 header('Content-Type: application/json');
 echo json_encode(['success' => true]);
 exit;

@@ -78,6 +78,7 @@ footer {
     justify-content: center; 
 }
 
+
 /* Hide the image and slogan entirely when browsing categories */
 .hero.show-categories .hero-bg-img {
     opacity: 0; 
@@ -415,4 +416,11 @@ footer {
 /* When the trigger has the '.collapsed' class, rotate it */
 [data-bs-toggle="collapse"].collapsed .collapse-icon {
     transform: rotate(-90deg); /* Points it to the right ▶ */
+}
+
+/* -- Index -- */
+.alert-dismissible {
+    position: relative;
+    z-index: 1050; /* Sits above other elements */
+    margin-top: 1rem;
 }

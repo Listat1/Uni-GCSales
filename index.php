@@ -1,5 +1,18 @@
 <?php
 // index.php
+    session_start();
+    // Check System Messges
+    $message = '';
+    if (isset($_GET['msg'])) {
+        switch ($_GET['msg']) {
+            case 'auth':
+                $message = "The way is shut! Speak friend (log in) to enter your dashboard.";
+                break;
+            case 'lo':
+                $message = "You've been logged out. See you next time!";
+                break;
+        }
+    }
     // Initialise Database
     require_once 'includes/dbconnection.php';
     $db = getDatabaseConnection();
@@ -13,7 +26,14 @@
     $pageTitle = "Grimsby and Clee Sells";
     $pageID = "home";
     include 'includes/header.php';
-?>
+
+    // Display System Mesasges (If Any)
+    if ($message):?>
+        <div class="alert alert-warning alert-dismissible fade show shadow-sm mt-3" role="alert">
+            <strong>Notice:</strong> <?php echo htmlspecialchars($message); ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+<?php endif; ?>
 
 <section class="hero" id="heroBanner">
     <img src="assets/graphics/ui/hero_desktop.webp" alt="Dock Tower" class="hero-bg-img">

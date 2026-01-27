@@ -1,15 +1,16 @@
 <?php
+// dashboard.php
 session_start();
+// Prevent direct access to page (without login)
+if (!isset($_SESSION['user_id'])) {
+    header("Location: index.php?msg=auth");
+    exit;
+}
 require_once 'includes/debug_helper.php'; 
 // Debug - Remove when done
 release_the_hounds();
 require_once 'includes/dbconnection.php';
 $pdo = getDatabaseConnection();
-// No Guests
-if (!isset($_SESSION['user_id'])) {
-    header("Location: index.php?error=login_required");
-    exit;
-}
 $user_id = $_SESSION['user_id'];
 try {
     // Get Profile Data
@@ -126,11 +127,8 @@ include 'includes/header.php';
 
     </div>
 <script>
-    // After Document has loaded:
-    document.addEventListener('DOMContentLoaded', () => {
-        <?php include 'assets/js/main.js'; ?>
-        <?php include 'assets/js/auth.js'; ?>    
-    });     
+    <?php include 'assets/js/main.js'; ?>
+    <?php include 'assets/js/auth.js'; ?>    
 </script>
 <?php 
     // Get Footer

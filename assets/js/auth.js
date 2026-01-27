@@ -42,8 +42,7 @@ const authModal = modalObject ? new bootstrap.Modal(modalObject) : null;
         const result = await response.json();
 
         if (result.success) {
-            LoginNavUpdate();
-            authModal.hide(); 
+            window.location.href = 'dashboard.php';            
         } else {
             alert(result.message);
         }

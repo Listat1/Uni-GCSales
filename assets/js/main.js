@@ -1,3 +1,4 @@
+// #### SHARED FUNCTIONS
 const currentPage = document.body.getAttribute('data-page-id');
 // Global Clickable items Listener
 document.addEventListener('click', async (e) => {
@@ -16,7 +17,7 @@ document.addEventListener('click', async (e) => {
             const result = await response.json();
             if (result.success) {
                 // Perform a Hard Reset of the UI state via reload
-                window.location.href = 'index.php';
+                window.location.href = 'index.php?msg=lo';
             }
         } catch (err) {
             console.error("Logout Sequence Error:", err);
@@ -24,33 +25,10 @@ document.addEventListener('click', async (e) => {
         return;
     }      
 });
-// #### SHARED FUNCTION
-// Actions to take after login is confirmed
-function LoginNavUpdate() {
-    const loginContainer = document.getElementById('loginDiv');
-    if (loginContainer) loginContainer.remove();    
-    
-    const navList = document.getElementById('navList');
-    if (navList) {
-        navList.innerHTML = ''; // Fresh start
-        const navItems = [
-            { label: 'Home',      url: 'index.php',     id: 'home' },
-            { label: 'Dashboard', url: 'dashboard.php', id: 'dashboard' },
-            { label: 'Basket',    url: 'basket.php',    id: 'basket' },
-            { label: 'Logout',    url: '#',             id: 'logoutBtn' }
-        ];
-        navItems.forEach(item => {
-            const li = document.createElement('li');
-            li.className = 'nav-item';
-            // Assign highlight for current page on NavBar
-            const isActive = (item.id === currentPage || (currentPage === 'home' && item.url === 'index.php'));
-            const activeClass = isActive ? 'active fw-bold' : '';
-            const idAttr = item.id ? `id="${item.id}"` : '';
-            li.innerHTML = `<a class="nav-link" ${idAttr} href="${item.url}">${item.label}</a>`;
-            navList.appendChild(li);
-        });
-    }
-}
+// Highlight the active page in the Navbar
+const activeLink = document.querySelector(`#navList a[href="${currentPage === 'home' ? 'index.php' : currentPage + '.php'}"]`);
+if (activeLink) activeLink.classList.add('active', 'fw-bold');
+
 // INDEX.PHP ONLY CODE //
 if (currentPage === 'home') {
     // 1. Grab all elements
@@ -198,6 +176,3 @@ if (currentPage === 'home') {
         });
     }
 }
-// Highlight the active page in the Navbar
-const activeLink = document.querySelector(`#navList a[href="${currentPage === 'home' ? 'index.php' : currentPage + '.php'}"]`);
-if (activeLink) activeLink.classList.add('active', 'fw-bold');
