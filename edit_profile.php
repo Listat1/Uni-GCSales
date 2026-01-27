@@ -19,11 +19,26 @@ $pageTitle = "G&C Sells - Edit Profile";
 $pageID = "edit-profile";
 include 'includes/header.php';
 ?>
-
 <main class="container mt-5">
     <header class="mb-4">
         <h2>Edit Profile</h2>
     </header>
+
+    <?php
+    // If an error in writing to the database triggers, this page is reloaded with the error attached for processing.
+    if (isset($_GET['msg'])): ?>
+        <?php if ($_GET['msg'] === 'exists'): ?>
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                <strong>Username Taken:</strong> That username is already in use. Please try another.
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        <?php elseif ($_GET['msg'] === 'error'): ?>
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <strong>System Error:</strong> We couldn't update your profile at this time.
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        <?php endif; ?>
+    <?php endif; ?>
 
     <form action="api/proc_edit_profile.php" method="POST" class="card p-4 shadow-sm">
         <fieldset>

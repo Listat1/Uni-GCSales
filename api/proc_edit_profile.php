@@ -22,7 +22,7 @@ try {
     $stmt = $pdo->prepare("SELECT level FROM users WHERE user_id = ?");
     $stmt->execute([$user_id]);
     $current_user = $stmt->fetch();
-
+    // Only display fields User is allowed to edit
 if ($current_user['level'] >= 30 && $new_level !== null) {
         $sql = "UPDATE users 
             SET first_name = ?, last_name = ?, username = ?, email = ?, level = ? 
@@ -38,12 +38,17 @@ if ($current_user['level'] >= 30 && $new_level !== null) {
     $stmt = $pdo->prepare($sql);
     $stmt->execute($params);
 
-    // 4. Redirect with Success
+    // No Errors - Redirect back to dashboard
     header("Location: ../dashboard.php?msg=updated");
     exit;
 
-} catch (PDOException $e) {
-    // In a production app, log $e->getMessage() and show a generic error
-    header("Location: edit_profile.php?msg=error");
+} 
+catch (PDOException $e) {
+    // Error code 23000:= Integrity constraint violation (like Unique keys)
+    if ($e->getCode() == 23000) {
+        header("Location: ../edit_profile.php?msg=exists");
+    } else {
+        header("Location: ../edit_profile.php?msg=error");
+    }
     exit;
 }
