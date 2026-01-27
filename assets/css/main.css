@@ -406,16 +406,33 @@ footer {
 }
 
 /* -- Dashboard -- */
-/* Arrows in Dashboard collapse */
-/* Base state: Arrow is pointing down (Expanded) */
+
+/* 1. Base state: Arrow points Down (▼) when the card is expanded */
 .collapse-icon {
     display: inline-block;
-    transition: transform 0.3s ease; /* Adds the animation you wanted! */
+    transition: transform 0.3s ease;
+    transform: rotate(0deg); 
 }
 
-/* When the trigger has the '.collapsed' class, rotate it */
+/* 2. Closed state: Rotate arrow to point Right (▶) when header has .collapsed class */
 [data-bs-toggle="collapse"].collapsed .collapse-icon {
-    transform: rotate(-90deg); /* Points it to the right ▶ */
+    transform: rotate(-90deg);
+}
+
+/* 3. Hide the edit button when the preceding header is collapsed */
+[data-bs-toggle="collapse"].collapsed + div .edit-btn-collapse {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(10px);
+    transition: all 0.3s ease;
+}
+
+/* 4. Show the button when the preceding header is expanded */
+[data-bs-toggle="collapse"]:not(.collapsed) + div .edit-btn-collapse {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(0);
+    transition: all 0.3s ease;
 }
 
 /* -- Index -- */

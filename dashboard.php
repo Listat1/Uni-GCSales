@@ -1,4 +1,5 @@
 <?php
+// dashboard.php
 session_start();
 // Prevent direct access to page (without login)
 if (!isset($_SESSION['user_id'])) {
@@ -53,45 +54,58 @@ include 'includes/header.php';
     </div>
 </div>
 
-<div class="display-div dashboard-scroll" id="dashboardAccordion">
+<?php
+    // Acknowlege sucessful updates
+    if (isset($_GET['msg']) && $_GET['msg'] === 'updated'):
+?>
+<div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+    <strong>Profile Saved!</strong> Your information has been updated successfully.
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+<?php endif; ?>
+
+<section class="display-div dashboard-scroll" id="dashboardAccordion">
     
-    <div class="card mb-3">
-        <div class="card-header d-flex justify-content-between align-items-center" 
-            style="cursor: pointer;" 
-            data-bs-toggle="collapse" 
-            data-bs-target="#profileBody">
-            <span>Profile Summary</span>
-            <span class="collapse-icon">▼</span>
+    <article class="card mb-3">
+        <div class="d-flex align-items-center border-bottom bg-body-tertiary">
+            <header class="card-header border-0 flex-grow-1 d-flex justify-content-between align-items-center mb-0" 
+                    style="cursor: pointer; background: transparent;" 
+                    data-bs-toggle="collapse" data-bs-target="#profileBody">
+                <span>Profile Summary</span>
+                <span class="collapse-icon">▼</span>
+            </header>
+            <div class="pe-3 ms-3 border-start ps-3 d-flex align-items-center" style="height: 24px; min-width: 85px;">
+                <a href="edit_profile.php" class="btn btn-sm btn-outline-secondary edit-btn-collapse">Edit</a>
+            </div>
         </div>
         <div id="profileBody" class="collapse show" data-bs-parent="#dashboardAccordion">
             <div class="card-body">
                 <dl class="row mb-0">
                     <dt class="col-sm-4 text-muted fw-normal">Name:</dt>
                     <dd class="col-sm-8"><?php echo htmlspecialchars($user['first_name'] . ' ' . $user['last_name']); ?></dd>
-
                     <dt class="col-sm-4 text-muted fw-normal">Username:</dt>
                     <dd class="col-sm-8"><?php echo htmlspecialchars($user['username']); ?></dd>
-
                     <dt class="col-sm-4 text-muted fw-normal">Email:</dt>
                     <dd class="col-sm-8"><?php echo htmlspecialchars($user['email']); ?></dd>
-
                     <dt class="col-sm-4 text-muted fw-normal">Account Role:</dt>
                     <dd class="col-sm-8"><?php echo htmlspecialchars($user['role_name'] ?? 'Neighbour'); ?> (Level <?php echo $user['level']; ?>)</dd>
-
                     <dt class="col-sm-4 text-muted fw-normal">Member Since:</dt>
                     <dd class="col-sm-8"><?php echo date('d/m/Y', strtotime($user['created_at'])); ?></dd>
                 </dl>
             </div>
         </div>
-    </div>
+    </article>
 
-    <div class="card mb-3">
-        <div class="card-header d-flex justify-content-between align-items-center" 
-            style="cursor: pointer;"
-            data-bs-toggle="collapse"
-            data-bs-target="#postItemsBody">
-            Your Listings
-            <span class="collapse-icon">▼</span>
+    <article class="card mb-3">
+        <div class="d-flex align-items-center border-bottom bg-body-tertiary">
+            <header class="card-header border-0 flex-grow-1 d-flex justify-content-between align-items-center mb-0 collapsed" 
+                    style="cursor: pointer; background: transparent;" 
+                    data-bs-toggle="collapse" data-bs-target="#postItemsBody">
+                <span>Your Listings</span>
+                <span class="collapse-icon">▼</span>
+            </header>
+            <div class="pe-3 ms-3 border-start ps-3 d-flex align-items-center" style="height: 24px; min-width: 85px;">
+                </div>
         </div>
         <div id="postItemsBody" class="collapse" data-bs-parent="#dashboardAccordion">
             <div class="card-body">
@@ -108,12 +122,18 @@ include 'includes/header.php';
                 </div>
             </div>
         </div>
-    </div>
+    </article>
 
-    <div class="card mb-3">
-        <div class="card-header d-flex justify-content-between align-items-center" 
-             style="cursor: pointer;" data-bs-toggle="collapse" data-bs-target="#historyBody">
-            Purchase History <span class="collapse-icon">▼</span>
+    <article class="card mb-3">
+        <div class="d-flex align-items-center border-bottom bg-body-tertiary">
+            <header class="card-header border-0 flex-grow-1 d-flex justify-content-between align-items-center mb-0 collapsed" 
+                    style="cursor: pointer; background: transparent;" 
+                    data-bs-toggle="collapse" data-bs-target="#historyBody">
+                <span>Purchase History</span>
+                <span class="collapse-icon">▼</span>
+            </header>
+            <div class="pe-3 ms-3 border-start ps-3 d-flex align-items-center" style="height: 24px; min-width: 85px;">
+                </div>
         </div>
         <div id="historyBody" class="collapse" data-bs-parent="#dashboardAccordion">
             <div class="card-body">
@@ -135,9 +155,9 @@ include 'includes/header.php';
                 </div>
             </div>
         </div>
-    </div>
+    </article>
 
-</div>
+</section>
 
 <script>
     <?php include 'assets/js/main.js'; ?>
