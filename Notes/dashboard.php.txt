@@ -1,0 +1,9 @@
+Displaying listed items in "Your Listings"
+The method chosen here is to grab all the records associated with the user then use javascript
+to filter the list.
+This provides a separation between visual (javascript) and back-end services
+Future implementation should involve setting a limit on the number of records selected in order to 
+not overwelhm the database - these items would be displayed until the user asks for more records.
+- currently OOS for this project.
+
+

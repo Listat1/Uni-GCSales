@@ -22,8 +22,12 @@ try {
     $stmt->execute([$user_id]);
     $user = $stmt->fetch();
 
-    // Get Listed Items
-    $stmt = $pdo->prepare("SELECT * FROM products WHERE seller_id = ? ORDER BY created_at DESC");
+    // Get Listed Items (Joined with status for labels)
+    $stmt = $pdo->prepare("SELECT p.*, s.status_label 
+        FROM products p
+        JOIN product_status s ON p.status_id = s.status_id
+        WHERE seller_id = ? 
+        ORDER BY created_at DESC");
     $stmt->execute([$user_id]);
     $myProducts = $stmt->fetchAll();
 
@@ -54,10 +58,7 @@ include 'includes/header.php';
     </div>
 </div>
 
-<?php
-    // Acknowlege sucessful updates
-    if (isset($_GET['msg']) && $_GET['msg'] === 'updated'):
-?>
+<?php if (isset($_GET['msg']) && $_GET['msg'] === 'updated'): ?>
 <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
     <strong>Profile Saved!</strong> Your information has been updated successfully.
     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -70,11 +71,13 @@ include 'includes/header.php';
         <div class="d-flex align-items-center border-bottom bg-body-tertiary">
             <header class="card-header border-0 flex-grow-1 d-flex justify-content-between align-items-center mb-0" 
                     style="cursor: pointer; background: transparent;" 
-                    data-bs-toggle="collapse" data-bs-target="#profileBody">
+                    data-bs-toggle="collapse" 
+                    data-bs-target="#profileBody">
                 <span>Profile Summary</span>
                 <span class="collapse-icon">▼</span>
             </header>
-            <div class="pe-3 ms-3 border-start ps-3 d-flex align-items-center" style="height: 24px; min-width: 85px;">
+            <div class="pe-3 ms-3 border-start ps-3 d-flex align-items-center"
+                style="height: 24px; min-width: 85px;">
                 <a href="edit_profile.php" class="btn btn-sm btn-outline-secondary edit-btn-collapse">Edit</a>
             </div>
         </div>
@@ -83,12 +86,16 @@ include 'includes/header.php';
                 <dl class="row mb-0">
                     <dt class="col-sm-4 text-muted fw-normal">Name:</dt>
                     <dd class="col-sm-8"><?php echo htmlspecialchars($user['first_name'] . ' ' . $user['last_name']); ?></dd>
+                    
                     <dt class="col-sm-4 text-muted fw-normal">Username:</dt>
                     <dd class="col-sm-8"><?php echo htmlspecialchars($user['username']); ?></dd>
+                    
                     <dt class="col-sm-4 text-muted fw-normal">Email:</dt>
                     <dd class="col-sm-8"><?php echo htmlspecialchars($user['email']); ?></dd>
+                    
                     <dt class="col-sm-4 text-muted fw-normal">Account Role:</dt>
-                    <dd class="col-sm-8"><?php echo htmlspecialchars($user['role_name'] ?? 'Neighbour'); ?> (Level <?php echo $user['level']; ?>)</dd>
+                    <dd class="col-sm-8"><?php echo htmlspecialchars($user['role_name']); ?> (Level <?php echo $user['level']; ?>)</dd>
+                    
                     <dt class="col-sm-4 text-muted fw-normal">Member Since:</dt>
                     <dd class="col-sm-8"><?php echo date('d/m/Y', strtotime($user['created_at'])); ?></dd>
                 </dl>
@@ -100,7 +107,8 @@ include 'includes/header.php';
         <div class="d-flex align-items-center border-bottom bg-body-tertiary">
             <header class="card-header border-0 flex-grow-1 d-flex justify-content-between align-items-center mb-0 collapsed" 
                     style="cursor: pointer; background: transparent;" 
-                    data-bs-toggle="collapse" data-bs-target="#postItemsBody">
+                    data-bs-toggle="collapse" 
+                    data-bs-target="#postItemsBody">
                 <span>Your Listings</span>
                 <span class="collapse-icon">▼</span>
             </header>
@@ -109,14 +117,47 @@ include 'includes/header.php';
         </div>
         <div id="postItemsBody" class="collapse" data-bs-parent="#dashboardAccordion">
             <div class="card-body">
-                <a href="add_product.php" class="btn btn-success btn-sm mb-3">Add New Product</a>
-                <div class="list-group">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="btn-group btn-group-sm product-filters" role="group">
+                        <input type="radio"
+                            class="btn-check"
+                            name="statusFilter"
+                            id="btnLive"
+                            value="1"
+                            checked>
+                        <label class="btn btn-outline-secondary" for="btnLive">Live</label>
+
+                        <input type="radio"
+                            class="btn-check"
+                            name="statusFilter"
+                            id="btnSold"
+                            value="3">
+                        <label class="btn btn-outline-secondary" for="btnSold">Sold</label>
+
+                        <input type="radio"
+                            class="btn-check"
+                            name="statusFilter"
+                            id="btnAll"
+                            value="all">
+                        <label class="btn btn-outline-secondary" for="btnAll">Both</label>
+                    </div>                  
+                    <a href="add_product.php" class="btn btn-success btn-sm">Add New Product</a>
+                </div>
+
+                <div class="list-group list-group-flush" id="userProductHistory">
                     <?php if (empty($myProducts)): ?>
-                        <div class="list-group-item">No items listed.</div>
+                        <div class="list-group-item bg-transparent text-muted small">No items listed.</div>
                     <?php else: foreach ($myProducts as $item): ?>
-                        <div class="list-group-item d-flex justify-content-between align-items-center bg-transparent text-reset border-secondary">
-                            <span><?php echo htmlspecialchars($item['name']); ?></span>
-                            <a href="edit_product.php?id=<?php echo $item['product_id']; ?>" class="btn btn-outline-info btn-sm">Edit</a>
+                        <div class="list-group-item d-flex justify-content-between align-items-center bg-transparent text-reset border-secondary product-item" 
+                            data-status="<?php echo $item['status_id']; ?>">
+                            <div>
+                                <span class="fw-bold"><?php echo htmlspecialchars($item['name']); ?></span>
+                                <span class="badge rounded-pill bg-secondary ms-2 opacity-75 fw-normal" style="font-size: 0.7rem;">
+                                    <?php echo htmlspecialchars($item['status_label']); ?>
+                                </span>
+                            </div>
+                            <a href="edit_product.php?id=<?php echo $item['product_id']; ?>" 
+                                class="btn btn-outline-info btn-sm py-0">Edit</a>
                         </div>
                     <?php endforeach; endif; ?>
                 </div>
@@ -128,16 +169,17 @@ include 'includes/header.php';
         <div class="d-flex align-items-center border-bottom bg-body-tertiary">
             <header class="card-header border-0 flex-grow-1 d-flex justify-content-between align-items-center mb-0 collapsed" 
                     style="cursor: pointer; background: transparent;" 
-                    data-bs-toggle="collapse" data-bs-target="#historyBody">
+                    data-bs-toggle="collapse"
+                    data-bs-target="#historyBody">
                 <span>Purchase History</span>
                 <span class="collapse-icon">▼</span>
             </header>
             <div class="pe-3 ms-3 border-start ps-3 d-flex align-items-center" style="height: 24px; min-width: 85px;">
-                </div>
+            </div>
         </div>
         <div id="historyBody" class="collapse" data-bs-parent="#dashboardAccordion">
             <div class="card-body">
-                <div class="list-group">
+                <div class="list-group list-group-flush">
                     <?php if (empty($myPurchases)): ?>
                         <div class="list-group-item bg-transparent border-secondary text-reset">No purchases found.</div>
                     <?php else: foreach ($myPurchases as $order): ?>

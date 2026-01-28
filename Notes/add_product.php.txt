@@ -1,0 +1,12 @@
+Adding photo support
+Storage: assets/graphics/products/.
+Naming: Using product_id.
+    Main: 00001_1.webp (Primary)
+    Others: 00001_2.webp... 00001_5.webp
+    Thumbnail: 00001_thumb.webp (Copy of Main).
+use PHP's GD library or exec() to replicate those specific clipping and resizing commands.
+1. Update add_product.php (The UI)
+Add the enctype to the form and a file input that accepts multiple images. https://www.w3schools.com/tags/att_form_enctype.asp
+2. test the files uploaded to check they are images.
+3. Resize to 400x450 to fit the carousel easier,whilst reducing memory required.
+

@@ -29,6 +29,35 @@ document.addEventListener('click', async (e) => {
 const activeLink = document.querySelector(`#navList a[href="${currentPage === 'home' ? 'index.php' : currentPage + '.php'}"]`);
 if (activeLink) activeLink.classList.add('active', 'fw-bold');
 
+
+document.addEventListener('DOMContentLoaded', function() {
+    const filterContainer = document.querySelector('.product-filters');
+    if (!filterContainer) return; 
+
+    const filterButtons = document.querySelectorAll('input[name="statusFilter"]');
+    const productItems = document.querySelectorAll('.product-item');
+
+    filterButtons.forEach(button => {
+        button.addEventListener('change', function() {
+            const selectedStatus = this.value;
+
+            productItems.forEach(item => {
+                const itemStatus = item.getAttribute('data-status');
+                if (selectedStatus === 'all' || itemStatus === selectedStatus) {
+                    item.classList.replace('d-none', 'd-flex');
+                } else {
+                    item.classList.replace('d-flex', 'd-none');
+                }
+            });
+        });
+    });
+});
+
+
+
+
+
+
 // INDEX.PHP ONLY CODE //
 if (currentPage === 'home') {
     // 1. Grab all elements
