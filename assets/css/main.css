@@ -256,7 +256,7 @@ footer {
 }
 .result-card.expanded .thumb-img {
     width: 100%; /* Make image/carousel full width in expanded view */
-    height: 250px;
+    height: auto;
 }
 
 /* -- Carousel Styling -- */
