@@ -65,6 +65,18 @@
     </div>
 </section>
 
+<?php 
+// Display Basket when it has contents
+if (!empty($_SESSION['basket'])):
+    ?>
+    <div class="alert alert-info d-flex justify-content-between align-items-center mx-3 mt-2">
+        <span>You have <strong><?= count($_SESSION['basket']) ?></strong> items in your basket.</span>
+        <a href="checkout.php" class="btn btn-sm btn-info">View Basket & Checkout</a>
+    </div>
+    <?php
+endif;
+?>
+
 <section class="search-bar sticky-top" id="searchBar">
     <form id="searchForm" action="index.php" method="GET" class="w-100 d-flex">
         <input type="text" name="q" id="searchInput" class="form-control" 

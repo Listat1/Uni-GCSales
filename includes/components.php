@@ -39,8 +39,20 @@ function renderProductCard($p) {
                 <span class="text-muted">Loading details...</span>
             </p>
             <div class="d-flex gap-2">
-                <button class="btn btn-success flex-grow-1">Buy Now</button>
-                <button class="btn btn-primary flex-grow-1">Add to Basket</button>
+                <form class="flex-grow-1" action="checkout.php" method="POST">
+                    <input type="hidden" name="product_id" value="'.$p['product_id'].'">
+                    <input type="hidden" name="instant_buy" value="1">
+                    <button class="btn btn-success w-100" type="submit">
+                        Buy Now
+                    </button>
+                </form>
+
+                <form class="flex-grow-1" action="api/proc_basket.php" method="POST">
+                    <input type="hidden" name="product_id" value="'.$p['product_id'].'">
+                    <button class="btn btn-primary w-100" type="submit">
+                        Add to Basket
+                    </button>
+                </form>
             </div>
         </div>
     </div>';
