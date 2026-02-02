@@ -10,54 +10,84 @@ $action = $_POST['action'] ?? '';
 
 // --- REGISTRATION LOGIC ---
 if ($action === 'register') {
+    require_once '../includes/geo_calc.php'; 
+
+    // Sanitize basic user info
     $firstName = htmlspecialchars(trim($_POST['reg_first_name'] ?? ''));
     $lastName  = htmlspecialchars(trim($_POST['reg_last_name'] ?? ''));
     $username  = htmlspecialchars(trim($_POST['reg_username'] ?? ''));
     $email     = filter_var($_POST['reg_email'] ?? '', FILTER_SANITIZE_EMAIL);
     $password  = $_POST['reg_password'] ?? '';
+    
+    // Address Fields from Modal (populated by your JS Geo-tool)
+    $houseNum  = htmlspecialchars(trim($_POST['reg_house_num'] ?? ''));
+    $street    = htmlspecialchars(trim($_POST['reg_address_1'] ?? ''));
+    $city      = htmlspecialchars(trim($_POST['reg_city'] ?? 'Grimsby')); 
+    $postcode  = strtoupper(trim($_POST['reg_postcode'] ?? ''));
+
+    // Combine House + Street for MariaDB 'address_line_1'
+    $addressLine1 = trim($houseNum . ' ' . $street);
+
+    // 1. Geo-Fence Check (The 10-mile rule)
+    if (!isLocalPostcode($postcode)) {
+        echo json_encode(['success' => false, 'message' => 'Sorry, we only accept members within 10 miles of Grimsby/Cleethorpes.']);
+        exit;
+    }
 
     $hashed_pw = password_hash($password, PASSWORD_DEFAULT);
 
     try {
+        // START TRANSACTION (ACID Compliance)
         $db->beginTransaction();
 
-        // Matches your MariaDB columns exactly
-        $stmt = $db->prepare("
-            INSERT INTO users (email, username, first_name, last_name, role, is_active) 
-            VALUES (?, ?, ?, ?, 'buyer', 1)
-        ");
+        // A. Insert User Record
+        $sqlUser = "INSERT INTO users (email, username, first_name, last_name, level, is_active) 
+                    VALUES (?, ?, ?, ?, 10, 1)";
+        $stmt = $db->prepare($sqlUser);
         $stmt->execute([$email, $username, $firstName, $lastName]);
         
+        // Capture the New ID immediately (Safe in MariaDB/InnoDB)
         $newUserId = $db->lastInsertId();
 
-        $stmtPw = $db->prepare("INSERT INTO passwords (user_id, password_hash) VALUES (?, ?)");
+        // B. Insert Password Record (Linked by user_id)
+        $sqlPw = "INSERT INTO passwords (user_id, password_hash) VALUES (?, ?)";
+        $stmtPw = $db->prepare($sqlPw);
         $stmtPw->execute([$newUserId, $hashed_pw]);
 
+        // C. Insert Address Record (Linked by user_id)
+        $sqlAddr = "INSERT INTO addresses (user_id, address_type, address_line_1, city, postcode, is_default) 
+                    VALUES (?, 'Home', ?, ?, ?, 1)";
+        $stmtAddr = $db->prepare($sqlAddr);
+        $stmtAddr->execute([$newUserId, $addressLine1, $city, $postcode]);
+
+        // COMMIT: Everything is written at once
         $db->commit();
 
+        // Setup Session
         $_SESSION['user_id'] = $newUserId;
         $_SESSION['user_name'] = $firstName;
+        $_SESSION['user_level'] = 10;
         
         echo json_encode(['success' => true]);
+
     } catch (PDOException $e) {
-        if ($db->inTransaction()) $db->rollBack();
-        
-        if ($e->getCode() == 23000) { // Unique constraint violation (username)
-            echo json_encode(['success' => false, 'message' => 'That username is already taken.']);
-        } else {
-            echo json_encode(['success' => false, 'message' => 'Registration failed. Please try again.']);
+        // ROLLBACK: If any of the 3 inserts fail, undo EVERYTHING
+        if ($db->inTransaction()) {
+            $db->rollBack();
         }
+        
+        // Log the actual error for your eyes, but show a clean message to Graham
+        error_log("DB Error during registration: " . $e->getMessage());
+        echo json_encode(['success' => false, 'message' => 'Registration failed. Username or email may already be in use.']);
     }
     exit;
 }
 
 // --- LOGIN LOGIC ---
-// Test credentials, confirm if successful and assign a user level set $_SESSION[user_id,user_name,user_level]
 if ($action === 'login') {
     $username = htmlspecialchars(trim($_POST['username'] ?? ''));
     $password = $_POST['password'] ?? '';
 
-    // Join with our new roles table to get the numeric level
     $stmt = $db->prepare("
         SELECT u.user_id, u.first_name, u.level, p.password_hash 
         FROM users u 

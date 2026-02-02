@@ -25,6 +25,112 @@ document.addEventListener('click', async (e) => {
         return;
     }      
 });
+// -- GEO TOOLS (Unified Lookup & Reset) --
+let isProcessingGeo = false;
+
+async function performLookup() {
+    const pcField = document.getElementById('reg_postcode');
+    const houseNumField = document.getElementById('reg_house_num');
+    const verifyStatus = document.getElementById('verifyStatus');
+    const detailArea = document.getElementById('addressDetails');
+
+    if (!pcField || !verifyStatus || isProcessingGeo) return;
+
+    const pc = pcField.value.trim().toUpperCase();
+    const houseNum = houseNumField ? houseNumField.value.trim() : '';
+
+    if (!pc) return;
+    isProcessingGeo = true;
+
+    try {
+        const response = await fetch(`https://api.postcodes.io/postcodes/${pc}`);
+        const data = await response.json();
+
+        verifyStatus.classList.remove('bg-body-secondary');
+
+        if (data.status === 200) {
+            const res = data.result;
+
+            // 1. Determine Town Name
+            let townName = res.bua || res.ttwa || res.parish || res.admin_district;
+            townName = townName.replace(/, unparished area|District|Borough/gi, '').trim();
+
+            // 2. UI Feedback
+            verifyStatus.innerHTML = '<span class="text-success fw-bold"><i class="bi bi-check-lg"></i> Verified</span>';
+            verifyStatus.className = "input-group-text bg-success-subtle border-success text-success";
+
+            // 3. Update City Immediately
+            const cityField = document.getElementById('reg_city');
+            if (cityField) cityField.value = townName;
+
+            // 4. Update Street with Placeholder
+            if (detailArea) {
+                detailArea.style.opacity = "1";
+                detailArea.style.pointerEvents = "auto";
+
+                const streetField = document.getElementById('reg_address_1');
+                if (streetField) {
+                    if (pc === "DN31 1AA") {
+                        streetField.value = "Town Hall Square";
+                    } else {
+                        streetField.value = `[Street for ${pc}]`; 
+                    }
+                    streetField.classList.add('is-valid'); 
+                }
+            }
+        } 
+        else {
+            // Failure UI (Invalid Postcode)
+            verifyStatus.innerHTML = '<span class="text-danger fw-bold"><i class="bi bi-x-lg"></i> Invalid</span>';
+            verifyStatus.className = "input-group-text bg-danger-subtle border-danger text-danger";
+            if (detailArea) {
+                detailArea.style.opacity = "0.5";
+                detailArea.style.pointerEvents = "none";
+            }
+        }
+    } 
+    catch (err) {
+        console.error("Geo Lookup Error:", err);
+    } 
+    finally {
+        isProcessingGeo = false;
+    }
+} // <--- End of performLookup
+
+// Global Event Listeners for Geo Tools
+document.addEventListener('input', (e) => {
+    if (e.target.id === 'reg_postcode') {
+        const vs = document.getElementById('verifyStatus');
+        const da = document.getElementById('addressDetails');
+        if (vs) {
+            vs.innerHTML = '<span class="text-muted opacity-50">Pending...</span>';
+            vs.className = "input-group-text bg-body-secondary border-primary-subtle";
+        }
+        if (da) {
+            da.style.opacity = "0.5";
+            da.style.pointerEvents = "none";
+        }
+    }
+});
+
+document.addEventListener('keydown', (e) => {
+    if (e.target.id === 'reg_postcode' || e.target.id === 'reg_house_num') {
+        if (e.key === 'Enter') {
+            e.preventDefault(); 
+            performLookup();
+        }
+        if (e.key === 'Tab' && !e.shiftKey) {
+            performLookup();
+        }
+    }
+});
+
+document.addEventListener('focusout', (e) => {
+    if (e.target.id === 'reg_postcode' || e.target.id === 'reg_house_num') {
+        performLookup();
+    }
+});
+
 // Highlight the active page in the Navbar
 const activeLink = document.querySelector(`#navList a[href="${currentPage === 'home' ? 'index.php' : currentPage + '.php'}"]`);
 if (activeLink) activeLink.classList.add('active', 'fw-bold');
@@ -52,11 +158,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
-
-
-
-
-
 
 // INDEX.PHP ONLY CODE //
 if (currentPage === 'home') {
@@ -88,7 +189,8 @@ if (currentPage === 'home') {
                 productArea.appendChild(cardContainer);
                 new bootstrap.Collapse(cardContainer.querySelector('.collapse'), { toggle: false });
             });
-        } catch (err) { console.error("LiveSearch Error:", err); }
+        } 
+        catch (err) { console.error("LiveSearch Error:", err); }
     }
 
     // 3. Category Toggle (Guarded)

@@ -22,12 +22,29 @@ try {
     // Start the Transaction - ACID
     $pdo->beginTransaction();
 
-    // -- A. Calculate Total & Create Order --
-    // In a real system, you'd re-verify prices from the DB here
+    // -- ATOMIC CHECK: Race Condition Protection --
     $placeholders = implode(',', array_fill(0, count($productIDs), '?'));
+    $checkSql = "SELECT product_id FROM products 
+                 WHERE product_id IN ($placeholders) 
+                 AND status_id = 1 
+                 FOR UPDATE";
+    
+    $checkStmt = $pdo->prepare($checkSql);
+    $checkStmt->execute($productIDs);
+    $availableItems = $checkStmt->fetchAll(PDO::FETCH_COLUMN);
+
+    if (count($availableItems) !== count($productIDs)) {
+        throw new Exception("One or more items are no longer available. Someone may have just purchased them!");
+    }
+
+    // -- A. Calculate Total & Create Order --
     $priceStmt = $pdo->prepare("SELECT SUM(price) as total FROM products WHERE product_id IN ($placeholders)");
     $priceStmt->execute($productIDs);
     $totalAmount = $priceStmt->fetch(PDO::FETCH_ASSOC)['total'];
+
+    // VAT Logic: Inclusive of 20%. 
+    // We calculate the tax portion already inside the total for record-keeping.
+    $tax = $totalAmount - ($totalAmount / 1.2); 
 
     // Create the Main Order Record
     // (Using mockup values for address_id = 1 and status_code_id = 1 for 'Pending')
@@ -36,7 +53,7 @@ try {
     // ################################################################################################################
     // ########## HARDCODED ^^ ADDRESS ID - DONT FORGET TO FIX IT #####################################################             
     // ################################################################################################################
-    $tax = $totalAmount * 0.20; // Example 20% Tax logic
+    
     $stmtOrder = $pdo->prepare($sqlOrder);
     $stmtOrder->execute([$buyerID, $totalAmount, $tax]);
     
@@ -46,20 +63,16 @@ try {
     $sqlItem = "INSERT INTO order_items (order_id, product_id, quantity, price_each) VALUES (?, ?, 1, ?)";
     $stmtItem = $pdo->prepare($sqlItem);
 
-    // Update Product Status to 'Sold' (Status ID 3 in your system)
+    // Update Product Status to 'Sold' (Status ID 3)
     $sqlStatus = "UPDATE products SET status_id = 3 WHERE product_id = ?";
     $stmtStatus = $pdo->prepare($sqlStatus);
 
     foreach ($productIDs as $id) {
-        // Get individual price for the order_items record
         $pStmt = $pdo->prepare("SELECT price FROM products WHERE product_id = ?");
         $pStmt->execute([$id]);
         $price = $pStmt->fetchColumn();
 
-        // 1. Link to Order
         $stmtItem->execute([$orderID, $id, $price]);
-        
-        // 2. Mark as Sold
         $stmtStatus->execute([$id]);
     }
 
@@ -72,21 +85,15 @@ try {
     header("Location: ../dashboard.php?msg=purchase_complete");
     exit;
 
-// } catch (Exception $e) {
-//     // Something went wrong, roll back the database to how it was
-//     $pdo->rollBack();
-//     header("Location: ../checkout.php?msg=order_error");
-//     exit;
-// }
 } catch (Exception $e) {
     if ($pdo->inTransaction()) {
         $pdo->rollBack();
     }
-    // DISPLAY DEBUG MESSSAGE ON SCREEN
     echo "<h1>Transaction Failed!</h1>";
-    echo "<p>Error: " . $e->getMessage() . "</p>";
+    echo "<p style='color:red;'>Error: " . $e->getMessage() . "</p>";
     echo "<pre>";
     print_r($_SESSION['basket'] ?? 'Basket is empty');
     echo "</pre>";
+    echo "<a href='../basket.php'>Return to Basket</a>";
     exit; 
 }

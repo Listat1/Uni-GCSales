@@ -1,6 +1,6 @@
 <?php
 // includes/components.php
-// designed to reduce duplication of code 
+// created to reduce duplication of code 
 function renderProductCard($p) {
     // Returns Markup to calling code.
     // PHP can echo to screen, JS can process as a JSON.

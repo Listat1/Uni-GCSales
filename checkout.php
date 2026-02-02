@@ -5,19 +5,16 @@ require_once 'includes/dbconnection.php';
 require_once 'includes/components.php'; 
 
 $db = getDatabaseConnection();
-
-// -- Determine what we are buying --
 $checkoutItems = [];
 
-// Scenario A: Instant Buy (Skip Basket)
+// Buy Now
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['instant_buy'])) {
     $checkoutItems[] = (int)$_POST['product_id'];
 } 
-// Scenario B: Standard Basket
+// Add to Basket
 elseif (!empty($_SESSION['basket'])) {
     $checkoutItems = $_SESSION['basket'];
 } 
-// Scenario C: Empty handed
 else {
     header("Location: index.php");
     exit;
