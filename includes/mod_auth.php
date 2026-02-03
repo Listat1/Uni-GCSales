@@ -47,53 +47,55 @@
                         <input type="email" name="reg_email" class="form-control" required placeholder="name@example.com">
                     </div>
 
-<div class="mb-3 p-3 border rounded shadow-sm" style="background-color: rgba(0,0,0,0.02);">
-    <label class="form-label fw-bold text-primary mb-0">Delivery Details (Local Only)</label>
-    <div class="text-muted mb-3" style="font-size: 0.75rem;">
-        Within 10 miles of Grimsby. <span class="text-secondary">(Press Enter/Tab for testing)</span>
-    </div>
+                    <div class="mb-3 p-3 border rounded shadow-sm" style="background-color: rgba(0,0,0,0.02);">
+                        <label class="form-label fw-bold text-primary mb-0">Delivery Details (Local Only)</label>
+                        <div class="text-muted mb-3" style="font-size: 0.75rem;">
+                            Within 10 miles of Grimsby. <span class="text-secondary">(Press Enter/Tab for testing)</span>
+                        </div>
 
-<div class="mb-3">
-    <div class="d-flex justify-content-between align-items-end mb-1">
-        <label class="form-label small mb-0">Postcode</label>
-        <span class="text-muted" style="font-size: 0.65rem;">powered by postcodes.io</span>
-    </div>
-    <div class="input-group">
-        <input type="text" name="reg_postcode" id="reg_postcode" 
-               class="form-control fw-bold border-primary" 
-               value="DN31 1AA" required>
-        <span class="input-group-text bg-body-secondary border-primary-subtle" 
-              id="verifyStatus" 
-              style="min-width: 110px; font-size: 0.75rem; transition: all 0.3s ease;">
-            <span class="text-muted opacity-50">Pending...</span>
-        </span>
-    </div>
-    <div class="form-text" style="font-size: 0.65rem;">Tab or Enter to verify your area.</div>
-</div>
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-end mb-1">
+                                <label class="form-label small mb-0">Postcode</label>
+                                <span class="text-muted" style="font-size: 0.65rem;">powered by postcodes.io</span>
+                            </div>
+                            <div class="input-group">
+                                <input type="text" name="reg_postcode" id="reg_postcode" 
+                                    class="form-control fw-bold border-primary" 
+                                    value="DN31 1AA" required>
+                                <span class="input-group-text bg-body-secondary border-primary-subtle" 
+                                    id="verifyStatus" 
+                                    style="min-width: 110px; font-size: 0.75rem; transition: all 0.3s ease;">
+                                    <span class="text-muted opacity-50">Pending...</span>
+                                </span>
+                            </div>
+                            <div class="form-text" style="font-size: 0.65rem;">Tab or Enter to verify your area.</div>
+                        </div>
 
-    <div class="mb-3">
-        <label class="form-label small">House/Flat Number</label>
-        <input type="text" name="reg_house_num" id="reg_house_num" 
-               class="form-control" 
-               placeholder="e.g. 10 or Flat 1" required>
-        <div id="numWarning" class="text-danger d-none" style="font-size: 0.7rem;">Please enter a number first.</div>
-    </div>
+                        <div class="mb-3">
+                            <label class="form-label small">House/Flat Number</label>
+                            <input type="text" name="reg_house_num" id="reg_house_num" 
+                                class="form-control" 
+                                placeholder="e.g. 10 or Flat 1" required>
+                            <div id="numWarning" class="text-danger d-none" style="font-size: 0.7rem;">Please enter a number first.</div>
+                        </div>
 
-    <div id="addressDetails" class="mt-2" style="opacity: 0.5; pointer-events: none;">
-        <div class="mb-3">
-            <label class="form-label small">Street Address</label>
-            <input type="text" name="reg_address_1" id="reg_address_1" 
-                   class="form-control" placeholder="Awaiting postcode lookup...">
-        </div>
-        
-        <div class="row g-2 align-items-end">
-            <div class="col-8">
-                <label class="form-label small">City</label>
-                <input type="text" name="reg_city" id="reg_city" 
-                       class="form-control" value="Grimsby" readonly>
-            </div>
-        </div>
-    </div>
+                        <div id="addressDetails" class="mt-2" style="opacity: 0.5; pointer-events: none;">
+                            <div class="mb-3">
+                                <label class="form-label small">Street Address</label>
+                                <input type="text" name="reg_address_1" id="reg_address_1" 
+                                    class="form-control" placeholder="Awaiting postcode lookup...">
+                            </div>
+                            
+                            <div class="row g-2 align-items-end">
+                                <div class="col-8">
+                                    <label class="form-label small">City</label>
+                                    <input type="text" name="reg_city" id="reg_city" 
+                                        class="form-control" value="Grimsby" readonly>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="mb-3">
                         <label class="form-label small">Create Password</label>
                         <input type="password" name="reg_password" class="form-control" required>

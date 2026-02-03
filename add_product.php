@@ -11,11 +11,20 @@ $pdo = getDatabaseConnection();
 
 $categories = $pdo->query("SELECT * FROM categories ORDER BY category_name ASC")->fetchAll();
 
+// Category list
+$categoryOptions = '';
+foreach ($categories as $cat) {
+    $catId   = $cat['category_id'];
+    $catName = htmlspecialchars($cat['category_name']);
+    $categoryOptions .= "<option value=\"{$catId}\">{$catName}</option>\n";
+}
+
 $pageTitle = "G&C Sells - Add Listing";
 $pageID = "add-product";
 include 'includes/header.php';
-?>
 
+// Main UI Heredoc
+echo <<<HTML
 <main class="container mt-5 pt-5">
     <div class="row justify-content-center">
         <div class="col-md-9">
@@ -24,37 +33,46 @@ include 'includes/header.php';
                 <p class="text-muted">Fill in the details for your refurbished tech.</p>
             </header>
 
-            <form action="api/proc_add_product.php" 
+            <form class="card p-4 shadow-sm bg-body-tertiary"
+                action="api/proc_add_product.php" 
                 method="POST"
-                enctype="multipart/form-data" 
-                class="card p-4 shadow-sm bg-body-tertiary">
+                enctype="multipart/form-data">
                 
                 <div class="row g-3">
                     <div class="col-md-8">
                         <label class="form-label fw-bold">Item Name</label>
-                        <input type="text" name="name" class="form-control" placeholder="e.g. Dell Optiplex 7050" required>
+                        <input class="form-control"
+                            name="name" 
+                            type="text" 
+                            placeholder="e.g. Dell Optiplex 7050" 
+                            required>
                     </div>
 
                     <div class="col-md-4">
                         <label class="form-label fw-bold">Price (£)</label>
-                        <input type="number" name="price" step="0.01" class="form-control" placeholder="0.00" required>
+                        <input class="form-control"
+                            name="price" 
+                            type="number" 
+                            step="0.01" 
+                            placeholder="0.00" 
+                            required>
                     </div>
 
                     <div class="col-md-6">
                         <label class="form-label fw-bold">Category</label>
-                        <select name="category_id" class="form-select" required>
+                        <select class="form-select"
+                            name="category_id" 
+                            required>
                             <option value="" selected disabled>Choose category...</option>
-                            <?php foreach ($categories as $cat): ?>
-                                <option value="<?php echo $cat['category_id']; ?>">
-                                    <?php echo htmlspecialchars($cat['category_name']); ?>
-                                </option>
-                            <?php endforeach; ?>
+                            {$categoryOptions}
                         </select>
                     </div>
 
                     <div class="col-md-6">
                         <label class="form-label fw-bold">Condition</label>
-                        <select name="condition_label" class="form-select" required>
+                        <select class="form-select"
+                            name="condition_label"  
+                            required>
                             <option value="New/Unused">New/Unused</option>
                             <option value="Refurbished (Grade A)">Refurbished (Grade A)</option>
                             <option value="Refurbished (Grade B)">Refurbished (Grade B)</option>
@@ -65,12 +83,17 @@ include 'includes/header.php';
 
                     <div class="col-md-6">
                         <label class="form-label fw-bold">Stock Quantity</label>
-                        <input type="number" name="stock_quantity" class="form-control" value="1" required>
+                        <input class="form-control"
+                            name="stock_quantity" 
+                            type="number" 
+                            value="1" 
+                            required>
                     </div>
 
                     <div class="col-md-6">
                         <label class="form-label fw-bold">Listing Status</label>
-                        <select name="status_id" class="form-select">
+                        <select class="form-select"
+                            name="status_id">
                             <option value="1">Live (Immediate)</option>
                             <option value="2">Pending (Draft)</option>
                         </select>
@@ -78,17 +101,28 @@ include 'includes/header.php';
 
                     <div class="col-12">
                         <label class="form-label fw-bold">Short Summary</label>
-                        <input type="text" name="description" class="form-control" maxlength="150" placeholder="Summary for search results...">
+                        <input class="form-control"
+                            name="description" 
+                            type="text" 
+                            maxlength="150" 
+                            placeholder="Summary for search results...">
                     </div>
 
                     <div class="col-12">
                         <label class="form-label fw-bold">Full Specifications & Details</label>
-                        <textarea name="user_specs" class="form-control" rows="5" placeholder="Enter CPU, RAM, etc..."></textarea>
+                        <textarea class="form-control"
+                            name="user_specs" 
+                            rows="5" 
+                            placeholder="Enter CPU, RAM, etc..."></textarea>
                     </div>
 
                     <div class="col-12">
                         <label class="form-label fw-bold">Product Photos (Max 5)</label>
-                        <input type="file" name="product_images[]" class="form-control" accept="image/jpeg,image/png,image/webp" multiple>
+                        <input class="form-control"
+                            name="product_images[]" 
+                            type="file" 
+                            accept="image/jpeg,image/png,image/webp" 
+                            multiple>
                         <div class="form-text">First image is the main thumbnail. Widescreen works best.</div>
                     </div>
                 </div>
@@ -101,5 +135,7 @@ include 'includes/header.php';
         </div>
     </div>
 </main>
+HTML;
 
-<?php include 'includes/footer.php'; ?>
+include 'includes/footer.php';
+?>

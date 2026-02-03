@@ -1,5 +1,6 @@
 <?php
 // api/proc_auth.php
+// Session check is not performed here because a user cannot log if a criteria of logging in is thast they are logged in.
 session_start();
 header('Content-Type: application/json');
 
@@ -8,11 +9,11 @@ $db = getDatabaseConnection();
 
 $action = $_POST['action'] ?? '';
 
-// --- REGISTRATION LOGIC ---
+// REGISTRATION LOGIC
 if ($action === 'register') {
     require_once '../includes/geo_calc.php'; 
 
-    // Sanitize basic user info
+    // Sanitise basic user info
     $firstName = htmlspecialchars(trim($_POST['reg_first_name'] ?? ''));
     $lastName  = htmlspecialchars(trim($_POST['reg_last_name'] ?? ''));
     $username  = htmlspecialchars(trim($_POST['reg_username'] ?? ''));
@@ -59,6 +60,8 @@ if ($action === 'register') {
                     VALUES (?, 'Home', ?, ?, ?, 1)";
         $stmtAddr = $db->prepare($sqlAddr);
         $stmtAddr->execute([$newUserId, $addressLine1, $city, $postcode]);
+        // Get the record id of the Address just added to database
+        $addressId = $db->lastInsertId(); // Capture the ID from the addresses table
 
         // COMMIT: Everything is written at once
         $db->commit();
@@ -67,6 +70,7 @@ if ($action === 'register') {
         $_SESSION['user_id'] = $newUserId;
         $_SESSION['user_name'] = $firstName;
         $_SESSION['user_level'] = 10;
+        $_SESSION['user_address_id'] = $addressId;
         
         echo json_encode(['success' => true]);
 
@@ -83,7 +87,7 @@ if ($action === 'register') {
     exit;
 }
 
-// --- LOGIN LOGIC ---
+// LOGIN LOGIC
 if ($action === 'login') {
     $username = htmlspecialchars(trim($_POST['username'] ?? ''));
     $password = $_POST['password'] ?? '';
@@ -101,6 +105,14 @@ if ($action === 'login') {
         $_SESSION['user_id'] = $user['user_id'];
         $_SESSION['user_name'] = $user['first_name'];
         $_SESSION['user_level'] = $user['level'];
+        $addrStmt = $db->prepare(
+            query: "SELECT address_id
+            FROM addresses 
+            WHERE user_id = ? AND is_default = 1 
+            LIMIT 1");
+        $addrStmt->execute([$user['user_id']]);
+        $_SESSION['user_address_id'] = $addrStmt->fetchColumn();    
+    
         echo json_encode(['success' => true]);
     } else {
         echo json_encode(['success' => false, 'message' => 'Invalid credentials.']);

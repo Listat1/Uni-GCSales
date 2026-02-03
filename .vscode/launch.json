@@ -5,13 +5,10 @@
             "name": "Listen for Xdebug",
             "type": "php",
             "request": "launch",
-            "port": 9003
-        },
-        {
-            "name": "Launch in Browser",
-            "type": "firefox",
-            "request": "launch",
-            "url": "http://localhost/${workspaceFolderBasename}/index.php"
+            "port": 9003,
+            "pathMappings": {
+                "/opt/lampp/htdocs/Uni-GCSales": "${workspaceRoot}"
+            }
         }
     ]
 }

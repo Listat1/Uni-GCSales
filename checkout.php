@@ -20,7 +20,7 @@ else {
     exit;
 }
 
-// -- Fetch Item Details --
+// Fetch Item Details
 $placeholders = implode(',', array_fill(0, count($checkoutItems), '?'));
 $sql = "SELECT p.*, pi.file_path 
         FROM products p 
@@ -45,21 +45,26 @@ include 'includes/header.php';
             foreach ($products as $p): 
                 $subtotal += $p['price'];
             ?>
-                <div class="card mb-3 shadow-sm">
-                    <div class="card-body d-flex align-items-center">
-                        <img src="<?= $p['file_path'] ?? 'assets/graphics/products/placeholder.webp' ?>" 
-                             alt="Item" class="rounded me-3" style="width: 80px; height: 60px; object-fit: cover;">
-                        <div class="flex-grow-1">
-                            <h5 class="mb-0"><?= htmlspecialchars($p['name']) ?></h5>
-                            <small class="text-muted">Item ID: <?= str_pad($p['product_id'], 5, '0', STR_PAD_LEFT) ?></small>
-                        </div>
-                        <div class="text-end">
-                            <span class="fs-5 fw-bold">£<?= number_format($p['price'], 2) ?></span>
-                        </div>
+            <div class="card mb-3 shadow-sm">
+                <div class="card-body d-flex align-items-center">
+                    <img src="<?php $p['file_path'] ?? 'assets/graphics/products/placeholder.webp' ?>" 
+                            alt="Item" class="rounded me-3" style="width: 80px; height: 60px; object-fit: cover;">
+                    <div class="flex-grow-1">
+                        <h5 class="mb-0">
+                            <?php htmlspecialchars($p['name']) ?>
+                        </h5>
+                        <small class="text-muted">Item ID: 
+                            <?php str_pad($p['product_id'], 5, '0', STR_PAD_LEFT) ?>
+                        </small>
+                    </div>
+                    <div class="text-end">
+                        <span class="fs-5 fw-bold">£
+                            <?php number_format($p['price'], 2) ?>
+                        </span>
                     </div>
                 </div>
+            </div>
             <?php endforeach; ?>
-            
             <a href="index.php" class="btn btn-outline-secondary mt-2">← Continue Shopping</a>
         </div>
 
@@ -69,11 +74,15 @@ include 'includes/header.php';
                 <div class="card-body">
                     <div class="d-flex justify-content-between mb-2">
                         <span>Items:</span>
-                        <span><?= count($products) ?></span>
+                        <span>
+                            <?php count($products) ?>
+                        </span>
                     </div>
                     <div class="d-flex justify-content-between fs-4 fw-bold mb-4">
                         <span>Total:</span>
-                        <span>£<?= number_format($subtotal, 2) ?></span>
+                        <span>£
+                            <?php number_format($subtotal, 2) ?>
+                        </span>
                     </div>
 
                     <hr>
@@ -85,7 +94,9 @@ include 'includes/header.php';
 
                     <form action="api/proc_order.php" method="POST">
                         <?php foreach ($checkoutItems as $id): ?>
-                            <input type="hidden" name="product_ids[]" value="<?= $id ?>">
+                            <input type="hidden" 
+                                name="product_ids[]" 
+                                value="<?php $id ?>">
                         <?php endforeach; ?>
                         
                         <button type="submit" class="btn btn-success btn-lg w-100 shadow-sm">

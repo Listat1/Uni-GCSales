@@ -3,7 +3,6 @@
 // 'Geospatial helpers' for Grimsby & Cleethorpes local delivery validation
 // created to check registered users have an address within 10 miles og Grimsby 
 
-
 // Calculate distance between two points in miles using Haversine formula
 function getDistance($lat1, $lon1, $lat2, $lon2) {
     // Avoid division by zero or log errors on identical points
@@ -19,8 +18,6 @@ function getDistance($lat1, $lon1, $lat2, $lon2) {
     $miles = $dist * 60 * 1.1515;
     return $miles;
 }
-
-
 // Validate postcode is within 10 miles of Grimsby (DN31 1AA)
 // Uses postcodes.io
 function isLocalPostcode($userPostcode) {

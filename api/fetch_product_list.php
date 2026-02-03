@@ -1,5 +1,6 @@
 <?php
 // api/fetch_product_list.php
+// Session check is not performed here as visitors must be able to browse, not just registered members.
 require_once __DIR__ . '/../includes/dbconnection.php';
 require_once __DIR__ . '/../includes/db_select.php';
 require_once __DIR__ . '/../includes/components.php'; 

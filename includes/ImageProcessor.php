@@ -1,14 +1,13 @@
 <?php
-/**
- * ImageProcessor: Resizes/Crops physical files and writes to Database.
- * Ensures only the 1st image is used to create a thumbnail.
- * Ensure that $_FILES['product_images'] contains valid data before using
- */
+// ImageProcessor: Resizes/Crops physical files and writes to Database.
+// Ensures only the 1st image is used to create a thumbnail.
+// Ensure that $_FILES['product_images'] contains valid data before using
+
 function processAndStoreImages($pdo, $productID, $name) {
-    // -- System Integrity Check --
+    //System Integrity Check
     $isWebpCapable = function_exists('imagewebp') && function_exists('imagecreatefromwebp');
     $gdSaveMethod = $isWebpCapable ? 'imagewebp' : 'imagejpeg';
-    // -- Environment & Processing Methods Configuration --
+    //Configure Environment & Methods
     $imgDir = "../assets/graphics/products/";
     $imgPrefix = str_pad($productID, 5, "0", STR_PAD_LEFT);
     $ext = $isWebpCapable ? '.webp' : '.jpg';
@@ -35,7 +34,6 @@ function processAndStoreImages($pdo, $productID, $name) {
             // Get Current ImageSize 
             $origW = imagesx($srcImage);
             $origH = imagesy($srcImage);
-
             // Process Widescreen Main Image (800x450)
             $imgFileName = "{$imgPrefix}_{$fileNum}{$ext}";
             $image = imagecreatetruecolor(800, 450);

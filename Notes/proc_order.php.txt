@@ -1,0 +1,11 @@
+Need to look at how 
+Refunds are sorted
+(currently all order values are collated into one big total, regardles of who the seler is)
+re:    // Race Condition Protection protection using FOR UPDATE to 'lock' the rows in Database
+How to handle one.
+Currently just uses notifications, no action taken. Need to remove offending items from list and refresh.
+Maybe use a "Do you want to continue"?
+TAX: No point here, buts its in the database as a record. too late now.
+Can be used as a feature later when VAT registered sellers need to know how much VAT they need to pay.
+
+how to deal with multiple items of the same order in the same transactions: Currently set to 1

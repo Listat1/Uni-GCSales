@@ -1,8 +1,8 @@
 <?php
 // api/proc_basket.php
 session_start();
-// Check request is POST and product_id exists
-if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_POST['product_id'])) {
+// Check request method is POST (Stop direct access)
+if (!isset($_SESSION['user_id']) || $_SERVER['REQUEST_METHOD'] !== 'POST') {
     header("Location: ../index.php");
     exit;
 }
