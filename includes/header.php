@@ -52,7 +52,7 @@
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link <?php echo ($pageID == 'basket') ? 'active fw-bold' : ''; ?>"
-                                href="basket.php">Basket</a>
+                                href="checkout.php">Basket</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" id="logoutBtn" href="#">Logout</a>

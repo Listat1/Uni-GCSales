@@ -11,6 +11,9 @@
             case 'lo':
                 $message = "You've been logged out. See you next time!";
                 break;
+            case 'eb':
+                $message = "Your basket is empty! Browse our catagories and find something to take home.";
+                break;
         }
     }
     // Initialise Database
@@ -57,15 +60,19 @@
         ?>
     </div>    
 </section>
-
-<section class="login-register sticky-top" id="loginDiv">
-    <div class="container-fluid d-flex justify-content-center py-2">
-        <button class="btn btn-auth-primary me-2" id="loginBtn">Login</button>
-        <button class="btn btn-auth-secondary" id="registerBtn">Register</button>
-    </div>
-</section>
-
-<?php 
+<?php
+// Display Log / Register nag if user=guest
+if (!isset($_SESSION['user_id'])):
+    ?>
+    <section class="login-register sticky-top"
+        id="loginDiv">
+        <div class="container-fluid d-flex justify-content-center py-2">
+            <button class="btn btn-auth-primary me-2" id="loginBtn">Login</button>
+            <button class="btn btn-auth-secondary" id="registerBtn">Register</button>
+        </div>
+    </section>
+    <?php
+endif;
 // Display Basket when it has contents
 if (!empty($_SESSION['basket'])):
     ?>

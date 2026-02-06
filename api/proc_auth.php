@@ -80,9 +80,8 @@ if ($action === 'register') {
             $db->rollBack();
         }
         
-        // Log the actual error for your eyes, but show a clean message to Graham
         error_log("DB Error during registration: " . $e->getMessage());
-        echo json_encode(['success' => false, 'message' => 'Registration failed. Username or email may already be in use.']);
+        echo json_encode(['success' => false, 'message' => 'Registration failed:<br>Username already in use.']);
     }
     exit;
 }

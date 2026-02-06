@@ -11,6 +11,7 @@
                 <div id="authFeedback" class="alert d-none small py-2"></div>
 
                 <form id="loginForm">
+                    <div class="form-error-box"></div>
                     <div class="mb-3">
                         <label class="form-label auth-label">Username</label>
                         <input type="text" name="username" class="form-control auth-input" required>
@@ -26,6 +27,7 @@
                 </form>
 
                 <form id="registerForm" class="d-none">
+                    <div class="form-error-box"></div>
                     <div class="row g-2 mb-3">
                         <div class="col-md-6">
                             <label class="form-label small">First Name</label>

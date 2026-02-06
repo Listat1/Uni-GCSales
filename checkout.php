@@ -16,7 +16,7 @@ elseif (!empty($_SESSION['basket'])) {
     $checkoutItems = $_SESSION['basket'];
 } 
 else {
-    header("Location: index.php");
+    header("Location: index.php?msg=eb");
     exit;
 }
 
@@ -47,19 +47,19 @@ include 'includes/header.php';
             ?>
             <div class="card mb-3 shadow-sm">
                 <div class="card-body d-flex align-items-center">
-                    <img src="<?php $p['file_path'] ?? 'assets/graphics/products/placeholder.webp' ?>" 
+                    <img src="<?php echo ($p['file_path'] ?? 'assets/graphics/products/placeholder.webp'); ?>" 
                             alt="Item" class="rounded me-3" style="width: 80px; height: 60px; object-fit: cover;">
                     <div class="flex-grow-1">
                         <h5 class="mb-0">
-                            <?php htmlspecialchars($p['name']) ?>
+                            <?php echo htmlspecialchars($p['name']); ?>
                         </h5>
                         <small class="text-muted">Item ID: 
-                            <?php str_pad($p['product_id'], 5, '0', STR_PAD_LEFT) ?>
+                            <?php echo str_pad($p['product_id'], 5, '0', STR_PAD_LEFT); ?>
                         </small>
                     </div>
                     <div class="text-end">
                         <span class="fs-5 fw-bold">£
-                            <?php number_format($p['price'], 2) ?>
+                            <?php echo number_format($p['price'], 2); ?>
                         </span>
                     </div>
                 </div>
@@ -75,13 +75,13 @@ include 'includes/header.php';
                     <div class="d-flex justify-content-between mb-2">
                         <span>Items:</span>
                         <span>
-                            <?php count($products) ?>
+                            <?php echo count($products); ?>
                         </span>
                     </div>
                     <div class="d-flex justify-content-between fs-4 fw-bold mb-4">
                         <span>Total:</span>
                         <span>£
-                            <?php number_format($subtotal, 2) ?>
+                            <?php echo number_format($subtotal, 2); ?>
                         </span>
                     </div>
 
@@ -96,7 +96,7 @@ include 'includes/header.php';
                         <?php foreach ($checkoutItems as $id): ?>
                             <input type="hidden" 
                                 name="product_ids[]" 
-                                value="<?php $id ?>">
+                                value="<?php echo htmlspecialchars($id); ?>">
                         <?php endforeach; ?>
                         
                         <button type="submit" class="btn btn-success btn-lg w-100 shadow-sm">

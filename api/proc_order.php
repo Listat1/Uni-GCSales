@@ -10,7 +10,7 @@ require_once __DIR__ . '/../includes/dbconnection.php';
 $pdo = getDatabaseConnection();
 
 $buyerID = $_SESSION['user_id'];
-$productIDs = $_POST['product_ids'] ?? [];
+$productIDs = $_POST['product_ids'] ?? []; // Get array of product_id(s)
 
 if (empty($productIDs)) {
     header("Location: ../index.php?msg=empty_order");
@@ -88,6 +88,7 @@ catch (Exception $e) {
         $pdo->rollBack();
     }
     echo "<h1>Transaction Failed!</h1>";
+    echo "<p>Failure occurred on line: " . $e->getLine() . "</p>";
     echo "<p style='color:red;'>Error: " . htmlspecialchars($e->getMessage()) . "</p>";
     echo "<pre>";
     print_r($_SESSION['basket'] ?? 'Basket is empty');
