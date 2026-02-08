@@ -181,7 +181,9 @@ if (currentPage === 'home') {
         try {
             const response = await fetch(`api/fetch_product_list.php?q=${q}&cat=${cat}`);
             const products = await response.json();
+            
             productArea.innerHTML = "";
+            
             products.forEach(p => {
                 const cardContainer = document.createElement("div");
                 cardContainer.className = "result-card mb-3";
@@ -189,6 +191,13 @@ if (currentPage === 'home') {
                 productArea.appendChild(cardContainer);
                 new bootstrap.Collapse(cardContainer.querySelector('.collapse'), { toggle: false });
             });
+
+            // Add invisible spacer to allow bottom cards to scroll to top
+            // Initialized with no transition so expansion is instant when triggered
+            const spacer = document.createElement("div");
+            spacer.id = "scroll-spacer";
+            spacer.style.height = "0px";
+            productArea.appendChild(spacer);
         } 
         catch (err) { console.error("LiveSearch Error:", err); }
     }
@@ -225,53 +234,84 @@ if (currentPage === 'home') {
     // Action taken when event with BSclass:collapse triggered.
     // Scoped specifically to productArea to avoid Navbar collisions.
     // Lazy Loading implementation: Full Details and images loaded only when requested.
-    if (productArea) {
-        productArea.addEventListener('show.bs.collapse', async (e) => {
-            // The specific collapse element being opened
+if (productArea) {
+        productArea.addEventListener('show.bs.collapse', (e) => {
+            const card = e.target.closest('.result-card');
+            const spacer = document.getElementById('scroll-spacer');
+            
+            if (card) {
+                // 1. THE BUFFER
+                // Expand spacer instantly (no transition) to provide immediate scroll runway
+                if (spacer) {
+                    spacer.style.transition = "none";
+                    spacer.style.height = "50vh";
+                    spacer.style.display = "block"; 
+                }
+
+                setTimeout(() => {
+                    card.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    })
+                }, 100);
+
+                // 2. THE MATH (Absolute Page Coordinates)
+                // Timeout allows the DOM to acknowledge the spacer and the expanding card
+                setTimeout(() => {
+                    const cardPageTop = window.pageYOffset + card.getBoundingClientRect().top;
+                    
+                    const navH = document.querySelector('.navbar')?.offsetHeight || 0;
+                    const loginH = (document.getElementById('loginDiv')?.offsetHeight > 0) 
+                                   ? document.getElementById('loginDiv').offsetHeight : 0;
+                    const searchH = document.getElementById('searchBar')?.offsetHeight || 0;
+                    
+                    const totalStickyHeight = navH + loginH + searchH;
+
+                    // 3. THE JUMP
+                    window.scrollTo({
+                        top: cardPageTop - totalStickyHeight,
+                        behavior: 'smooth'
+                    });
+                }, 100);
+            }       
+            
+            // 4. DATA FETCHING
             const detailContainer = e.target; 
             const productId = detailContainer.id.replace('details-', '');
             const detailBody = detailContainer.querySelector('.full-desc');
             const carouselArea = detailContainer.querySelector('.carousel-placeholder');
 
-            // Skip if no detail body exists in DOM
-            if (!detailBody) return;
-
-            // Test status with HTML5 Data Attribute
-            const status = detailBody.getAttribute('data-status');
-
-            if (status === 'pending') {
-                // Immediately transition to 'loading' to prevent double-triggers (Debounce)
+            if (detailBody && detailBody.getAttribute('data-status') === 'pending') {
                 detailBody.setAttribute('data-status', 'loading');
                 detailBody.innerHTML = '<em>Refreshing product card...</em>';
 
-                try {
-                    const response = await fetch(`api/fetch_product_details.php?id=${productId}`);
-                    const data = await response.json();
-                    
-                    // Inject sanitised data from API
-                    detailBody.innerHTML = `
-                        <div class="d-flex justify-content-between border-bottom pb-2 mb-2">
-                            <strong class="text-primary">${data.name}</strong>
-                            <span class="text-success fw-bold">£${data.price}</span>
-                        </div>
-                        <div class="product-long-desc">${data.long_description}</div>
-                    `;
-
-                    // Carousel Implementation
-                    if (data.images && data.images.length > 0) {
-                        let carouselHtml = `
-                            <div id="carousel-${productId}" class="carousel slide" data-bs-ride="carousel">
-                                <div class="carousel-inner">`;
+                (async () => {
+                    try {
+                        const response = await fetch(`api/fetch_product_details.php?id=${productId}`);
+                        const data = await response.json();
                         
-                        data.images.forEach((path, index) => {
-                            carouselHtml += `
-                                <div class="carousel-item ${index === 0 ? 'active' : ''}">
-                                    <img src="${path}" class="d-block w-100 rounded-top" style="height:250px; object-fit:contain; background:#000;">
-                                </div>`;
-                        });
-
-                        carouselHtml += `
+                        detailBody.innerHTML = `
+                            <div class="d-flex justify-content-between border-bottom pb-2 mb-2">
+                                <strong class="text-primary">${data.name}</strong>
+                                <span class="text-success fw-bold">£${data.price}</span>
                             </div>
+                            <div class="product-long-desc">${data.long_description}</div>
+                        `;
+
+                        if (data.images && data.images.length > 0) {
+                            let carouselHtml = `
+                                <div id="carousel-${productId}" class="carousel slide" data-bs-ride="carousel">
+                                    <div class="carousel-inner">`;
+                            
+                            data.images.forEach((path, index) => {
+                                carouselHtml += `
+                                    <div class="carousel-item ${index === 0 ? 'active' : ''}">
+                                        <img src="${path}" class="d-block w-100 rounded-top" style="height:250px; object-fit:contain; background:#000;">
+                                    </div>`;
+                            });
+
+                            carouselHtml += `
+                                </div>
                                 <button class="carousel-control-prev" type="button" data-bs-target="#carousel-${productId}" data-bs-slide="prev">
                                     <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                                 </button>
@@ -282,28 +322,37 @@ if (currentPage === 'home') {
                             <div class="bg-dark text-white-50 small py-1 rounded-bottom border-top border-secondary text-center">
                                 Image <span id="count-${productId}">1</span> of ${data.images.length}
                             </div>`;
-                        
-                        carouselArea.innerHTML = carouselHtml;
-                        
-                        const carouselEl = document.getElementById(`carousel-${productId}`);
-                        const countSpan = document.getElementById(`count-${productId}`);
-                        carouselEl.addEventListener('slide.bs.carousel', (event) => {
-                            countSpan.innerText = event.to + 1;
-                        });
-                    } else {
-                        carouselArea.innerHTML = '<p class="text-muted small text-center">No additional images available.</p>';
+                            
+                            carouselArea.innerHTML = carouselHtml;
+                            
+                            const carouselEl = document.getElementById(`carousel-${productId}`);
+                            const countSpan = document.getElementById(`count-${productId}`);
+                            carouselEl.addEventListener('slide.bs.carousel', (event) => {
+                                countSpan.innerText = event.to + 1;
+                            });
+                        } else {
+                            carouselArea.innerHTML = '<p class="text-muted small text-center">No additional images available.</p>';
+                        }
+
+                        detailBody.setAttribute('data-status', 'complete');
+
+                    } catch (err) {
+                        console.error("Card Update Error:", err);
+                        detailBody.setAttribute('data-status', 'pending');
+                        detailBody.innerHTML = '<span class="text-danger">Error loading details.</span>';
                     }
+                })();
+            }
+        });
 
-                    // Set Status - HTML5 Data Attribute - to completed
-                    detailBody.setAttribute('data-status', 'complete');
-
-                } catch (err) {
-                    console.error("Card Update Error:", err);
-                    // Reset state on error so the user can attempt a retry
-                    detailBody.setAttribute('data-status', 'pending');
-                    detailBody.innerHTML = '<span class="text-danger">Connection lost. Click to try again.</span>';
-                }
+        // Remove virtual space when card is closed
+        // Transition added here so the footer slides back up smoothly
+        productArea.addEventListener('hide.bs.collapse', () => {
+            const spacer = document.getElementById('scroll-spacer');
+            if (spacer) {
+                spacer.style.transition = "height 0.4s ease";
+                spacer.style.height = "0px";
             }
         });
     }
-}
+} // End of if(currentPage === 'home')

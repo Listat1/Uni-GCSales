@@ -7,7 +7,7 @@ html, body {
 body {
     display: flex;
     flex-direction: column;
-    height: 100dvh;
+    /* min-height: 100dvh; */
     margin: 0; 
     transition: background 0.3s, color 0.3s; /*colour change*/
     background-color: #1e1e1e; 
@@ -29,7 +29,6 @@ main {
 footer {
     flex-shrink: 0; 
     margin-top: auto;
-    z-index: 10; /* Keep it above scrolling content */
 }
 
 /* -- Hero Div -- */
@@ -63,7 +62,6 @@ footer {
 
 #heroContent {
     position: relative; 
-    /* z-index: 2; */
     text-align: left;
     width: 80%;
     /* Fix: Bring back the punchy size */
@@ -130,6 +128,9 @@ footer {
     border-bottom-left-radius: 10px;
     border-bottom-right-radius: 10px;
 }
+#searchBar.sticky-top {
+    top: 56px;
+}
 
 .login-register, .search-bar { 
     flex-shrink: 0;
@@ -148,6 +149,17 @@ footer {
     text-align: center;
     margin-bottom: 0; /* Butt against the Search Bar */
     border-radius: 0; /* Square Corners , 8px for rounded */
+}
+#loginDiv.sticky-top {
+    top: 56px;
+    height: 52px; /* Explicit height prevents internal flex-centering jitters */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+#loginDiv ~ #searchBar.sticky-top {
+    top: 104px;
 }
 .search-bar input {
     background-color: #34495e;
@@ -234,6 +246,9 @@ footer {
     background: #3b4b5c;
     border-radius: 10px;
     margin-bottom: 12px;
+    /* Match totoal sticky height (Nav + Login + Search) */
+    /* scroll-margin-top: 115px; */
+    scroll-margin-top: 160px; 
 }
 .result-card img {
     width: 110px; height: 110px;
@@ -438,7 +453,6 @@ footer {
 /* -- Index -- */
 .alert-dismissible {
     position: relative;
-    z-index: 1050; /* Sits above other elements */
     margin-top: 1rem;
 }
 

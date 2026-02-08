@@ -103,6 +103,7 @@ endif;
             <?= renderProductCard($p) ?>
         </div>
     <?php endforeach; ?>
+    <div id="scroll-spacer" style="height: 0px;"></div>
     <?php endif; ?>
 </section>
 <?php 
