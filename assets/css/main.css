@@ -7,9 +7,10 @@ html, body {
 body {
     display: flex;
     flex-direction: column;
-    /* min-height: 100dvh; */
+    /* min-height changed to allow growth for the padding-runway */
+    min-height: 100dvh; 
     margin: 0; 
-    transition: background 0.3s, color 0.3s; /*colour change*/
+    transition: background 0.3s, color 0.3s; 
     background-color: #1e1e1e; 
     color: #e0e0e0;
 }
@@ -20,7 +21,6 @@ main {
     display: flex;
     flex-direction: column;
     padding: 1rem;
-    /* Centering logic for the 1280px limit */
     width: 100%;
     max-width: 1280px;
     margin: 0 auto;
@@ -64,7 +64,6 @@ footer {
     position: relative; 
     text-align: left;
     width: 80%;
-    /* Fix: Bring back the punchy size */
     font-size: 2.5rem; 
     font-weight: 800;
     line-height: 1.2;
@@ -76,8 +75,6 @@ footer {
     justify-content: center; 
 }
 
-
-/* Hide the image and slogan entirely when browsing categories */
 .hero.show-categories .hero-bg-img {
     opacity: 0; 
     pointer-events: none;
@@ -117,12 +114,10 @@ footer {
 
 /* -- Search & Interaction -- */
 
-/* Unique Anchor for the Search Bar */
 #searchBar {
     display: flex; 
     gap: 5px;
     margin-bottom: 1rem;
-    /* Top borders square to butt against LOG NAG or HERO */
     border-top-left-radius: 0;
     border-top-right-radius: 0;
     border-bottom-left-radius: 10px;
@@ -136,10 +131,7 @@ footer {
     flex-shrink: 0;
     background-color: var(--site-bg);
     opacity: 1;
-    /* Make the background extend beyond rounded edges */
     padding: 10px;
-/* Test if ghost line appears between divs */
-/* margin-top: -1px; */
 }
 
 #loginDiv {
@@ -147,12 +139,12 @@ footer {
     color: #ecf0f1;
     padding: 0.75rem;
     text-align: center;
-    margin-bottom: 0; /* Butt against the Search Bar */
-    border-radius: 0; /* Square Corners , 8px for rounded */
+    margin-bottom: 0;
+    border-radius: 0;
 }
 #loginDiv.sticky-top {
     top: 56px;
-    height: 52px; /* Explicit height prevents internal flex-centering jitters */
+    height: 52px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -168,17 +160,17 @@ footer {
 }
 .search-bar input::placeholder { color: #b8c2cc; }
 
-/* -- List Area -- */
+/* -- List Area (The "Ghost" Container) -- */
 .display-div {
-    /* Assign min-height: to create buffer for sticky divs; */
     margin-top: 1rem;
     min-height: 25lh; 
     padding: 1rem;
     border-radius: 10px;
     flex: 1;
-    background-color: #2c3e50;
-    color: #b8c2cc;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    /* Background and shadow removed to allow transparent scrolling */
+    background-color: transparent; 
+    box-shadow: none;
+    transition: padding-bottom 0.4s ease; /* Smooth footer return */
 }
 
 /* -- Footer -- */
@@ -200,55 +192,49 @@ footer {
 
 /* -- RESPONSIVENESS -- */
 
-/* Vertical fix for short screens */
 @media (max-height: 650px) {
     .hero { aspect-ratio: auto; height: 180px; }
     .hero.show-categories { max-height: 60vh; }
 }
 
-/* Mobile Portrait */
 @media (max-width: 768px) {
     main { 
         display: flex; 
         flex-direction: column;
-        flex: 1; /* Force main to fill the gap on mobile */
+        flex: 1; 
     }
-    
     .display-div {
         flex: 1; 
         min-height: 300px;
         margin-bottom: 1rem;
     }
-    
     .hero {
         aspect-ratio: auto;
         height: auto;
         min-height: 200px;
         padding: 2rem 1rem;
     }
-    
     .cat-grid-btn { flex: 1 1 45%; } 
-    
     footer { 
         display: flex; 
         flex-direction: column; 
         gap: 5px; 
-        padding: 10px; /* Slimmer footer for mobile room */
+        padding: 10px; 
     }
 }
 
 /* -- SEARCH RESULT CARD STYLES -- */
 .result-card {
     display: flex;
-    flex-direction: column; /* Changed from row to allow vertical expansion for carousel */
+    flex-direction: column;
     gap: 0; 
-    padding: 0; /* Let .card-body handle padding */
-    background: #3b4b5c;
+    padding: 0;
+    /* Background and Shadow moved here from .display-div */
+    background: var(--card-bg); 
     border-radius: 10px;
     margin-bottom: 12px;
-    /* Match totoal sticky height (Nav + Login + Search) */
-    /* scroll-margin-top: 115px; */
     scroll-margin-top: 160px; 
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
 }
 .result-card img {
     width: 110px; height: 110px;
@@ -256,67 +242,54 @@ footer {
 }
 .result-desc { font-size: 0.95rem; color: #e4e8eb; }
 
-/* Hide expanded content by default */
 .card-expanded-content {
     display: none;
     padding-top: 1rem;
     border-top: 1px solid var(--btn-secondary);
 }
-/* When the card has the 'expanded' class, show the content */
 .result-card.expanded {
-    flex-direction: column; /* Stack info top-to-bottom */
+    flex-direction: column; 
 }
 .result-card.expanded .card-expanded-content {
     display: block;
 }
 .result-card.expanded .thumb-img {
-    width: 100%; /* Make image/carousel full width in expanded view */
+    width: 100%; 
     height: auto;
 }
 
 /* -- Carousel Styling -- */
-/* Force Navigation icons to be white and high-contrast */
 .carousel-control-prev-icon,
 .carousel-control-next-icon {
-    /* invert(1) turns black SVGs into white */
-    /* brightness(2) makes them pop against the dark backgrounds */
     filter: invert(1) grayscale(100%) brightness(200%) !important;
-    
-    /* Adds a semi-transparent dark circle so they are visible on light images too */
     background-color: rgba(0, 0, 0, 0.3); 
     border-radius: 50%;
-    background-size: 60% 60%; /* Scales the arrow inside the circle */
+    background-size: 60% 60%; 
     padding: 1.2rem;
 }
 
-/* Remove bottom rounding from image so it sits flush with the counter */
 .carousel-item img {
     display: block;
     border-bottom-left-radius: 0 !important;
     border-bottom-right-radius: 0 !important;
 }
-/* Shift the counter up to overlap the gap and fix the border */
 .carousel-placeholder > div:last-child {
     margin-top: -2px;
     border-top: 1px solid rgba(255,255,255,0.1) !important;
 }
-/* Ensure the placeholder doesn't have extra padding at the bottom */
 .carousel-placeholder {
     padding-bottom: 0 !important;
 }
-/* Style the counter bar */
 .carousel-placeholder + .small {
     font-family: monospace; 
     letter-spacing: 1px;
 }
 
-/* Optional: Adjust hit-area so it doesn't block the whole image */
 .carousel-control-prev, .carousel-control-next {
     width: 10%; 
 }
 
 /* -- LIGHT / DARK SWITCH -- */
-/* Custom dark/light variables for divs */
 [data-bs-theme="dark"] {
     --site-bg: #1e1e1e;
     --site-text: #e0e0e0;
@@ -339,41 +312,14 @@ footer {
     --input-placeholder: #888;
 }
 
-[data-bs-theme="light"] .login-register .btn-outline-light {
-    color: #333; /* Dark text */
-    border-color: #333; /* Dark border */
-}
-
-[data-bs-theme="light"] .login-register .btn-outline-light:hover {
-    background-color: #333;
-    color: #fff;
-}
-
-/* Apply variables to the structure */
-body { 
-    background-color: var(--site-bg); 
-    color: var(--site-text); 
-}
-
+/* Dynamic theming applications */
+body { background-color: var(--site-bg); color: var(--site-text); }
 .hero { background: var(--hero-gradient); }
-
-.login-register, .display-div { 
-    background-color: var(--container-bg); 
-    color: var(--site-text); 
-}
-
-.search-bar input, .cat-grid-btn { 
-    background-color: var(--btn-secondary); 
-    color: var(--site-text); 
-}
-
+.login-register { background-color: var(--site-bg); }
+.display-div { color: var(--site-text); } /* Container is transparent now */
+.search-bar input, .cat-grid-btn { background-color: var(--btn-secondary); color: var(--site-text); }
 .search-bar input::placeholder { color: var(--input-placeholder); }
-
-footer { 
-    background-color: var(--footer-bg); 
-    color: var(--site-text); 
-}
-
+footer { background-color: var(--footer-bg); color: var(--site-text); }
 .result-card { background: var(--card-bg); }
 .result-desc { color: var(--site-text); }
 
@@ -384,82 +330,26 @@ footer {
     border: 1px solid rgba(255,255,255,0.1);
     border-radius: 12px;
 }
+.modal-header { border-bottom: 1px solid rgba(255,255,255,0.1); }
+.auth-label { font-size: 0.85rem; opacity: 0.8; color: var(--site-text); }
+.auth-input { background-color: var(--btn-secondary) !important; color: var(--site-text) !important; border: 1px solid rgba(0,0,0,0.2); }
+.auth-input:focus { background-color: var(--btn-secondary); color: var(--site-text); box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25); }
+.auth-toggle-text { font-size: 0.9rem; opacity: 0.7; }
 
-.modal-header {
-    border-bottom: 1px solid rgba(255,255,255,0.1);
-}
-
-.auth-label {
-    font-size: 0.85rem;
-    opacity: 0.8;
-    color: var(--site-text);
-}
-
-.auth-input {
-    background-color: var(--btn-secondary) !important;
-    color: var(--site-text) !important;
-    border: 1px solid rgba(0,0,0,0.2);
-}
-
-.auth-input:focus {
-    background-color: var(--btn-secondary);
-    color: var(--site-text);
-    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
-}
-
-.auth-toggle-text {
-    font-size: 0.9rem;
-    opacity: 0.7;
-}
-
-/* Light Mode specific tweak for the close button */
-[data-bs-theme="light"] #modalCloseBtn {
-    filter: none;
-}
-[data-bs-theme="dark"] #modalCloseBtn {
-    filter: invert(1) grayscale(100%) brightness(200%);
-}
+[data-bs-theme="light"] #modalCloseBtn { filter: none; }
+[data-bs-theme="dark"] #modalCloseBtn { filter: invert(1) grayscale(100%) brightness(200%); }
 
 /* -- Dashboard -- */
-
-/* 1. Base state: Arrow points Down (▼) when the card is expanded */
-.collapse-icon {
-    display: inline-block;
-    transition: transform 0.3s ease;
-    transform: rotate(0deg); 
-}
-
-/* 2. Closed state: Rotate arrow to point Right (▶) when header has .collapsed class */
-[data-bs-toggle="collapse"].collapsed .collapse-icon {
-    transform: rotate(-90deg);
-}
-
-/* 3. Hide the edit button when the preceding header is collapsed */
-[data-bs-toggle="collapse"].collapsed + div .edit-btn-collapse {
-    opacity: 0;
-    pointer-events: none;
-    transform: translateX(10px);
-    transition: all 0.3s ease;
-}
-
-/* 4. Show the button when the preceding header is expanded */
-[data-bs-toggle="collapse"]:not(.collapsed) + div .edit-btn-collapse {
-    opacity: 1;
-    pointer-events: auto;
-    transform: translateX(0);
-    transition: all 0.3s ease;
-}
+.collapse-icon { display: inline-block; transition: transform 0.3s ease; transform: rotate(0deg); }
+[data-bs-toggle="collapse"].collapsed .collapse-icon { transform: rotate(-90deg); }
+[data-bs-toggle="collapse"].collapsed + div .edit-btn-collapse { opacity: 0; pointer-events: none; transform: translateX(10px); transition: all 0.3s ease; }
+[data-bs-toggle="collapse"]:not(.collapsed) + div .edit-btn-collapse { opacity: 1; pointer-events: auto; transform: translateX(0); transition: all 0.3s ease; }
 
 /* -- Index -- */
-.alert-dismissible {
-    position: relative;
-    margin-top: 1rem;
-}
-
+.alert-dismissible { position: relative; margin-top: 1rem; }
 
 @keyframes shake {
     0%, 100% { transform: translateX(0); }
     25% { transform: translateX(-5px); }
     75% { transform: translateX(5px); }
 }
-

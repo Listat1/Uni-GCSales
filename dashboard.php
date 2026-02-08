@@ -67,9 +67,14 @@ include 'includes/header.php';
 </div>
 
 <?php if (isset($_GET['msg']) && $_GET['msg'] === 'updated'): ?>
-    <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
-        <strong>Profile Saved!</strong> Your information has been updated successfully.
-        <button type="button" class="btn-close" data-bs-alert="alert" aria-label="Close"></button>
+    <div class="alert alert-success alert-dismissible fade show mb-4 shadow-sm" role="alert">
+        <?php if ($pageID === 'edit-profile'): ?>
+            <strong>Profile Saved!</strong> Your information has been updated successfully.
+        <?php else: ?>
+            <strong>Changes Saved!</strong> Your product has been updated successfully.
+        <?php endif; ?>
+        
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 <?php endif; ?>
 

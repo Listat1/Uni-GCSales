@@ -191,13 +191,7 @@ if (currentPage === 'home') {
                 productArea.appendChild(cardContainer);
                 new bootstrap.Collapse(cardContainer.querySelector('.collapse'), { toggle: false });
             });
-
-            // Add invisible spacer to allow bottom cards to scroll to top
-            // Initialized with no transition so expansion is instant when triggered
-            const spacer = document.createElement("div");
-            spacer.id = "scroll-spacer";
-            spacer.style.height = "0px";
-            productArea.appendChild(spacer);
+            // Note: Spacer div removed in favor of Padding logic below
         } 
         catch (err) { console.error("LiveSearch Error:", err); }
     }
@@ -234,48 +228,27 @@ if (currentPage === 'home') {
     // Action taken when event with BSclass:collapse triggered.
     // Scoped specifically to productArea to avoid Navbar collisions.
     // Lazy Loading implementation: Full Details and images loaded only when requested.
-if (productArea) {
+    if (productArea) {
         productArea.addEventListener('show.bs.collapse', (e) => {
             const card = e.target.closest('.result-card');
-            const spacer = document.getElementById('scroll-spacer');
             
             if (card) {
-                // 1. THE BUFFER
-                // Expand spacer instantly (no transition) to provide immediate scroll runway
-                if (spacer) {
-                    spacer.style.transition = "none";
-                    spacer.style.height = "50vh";
-                    spacer.style.display = "block"; 
-                }
+                // 1. THE BUFFER (The Illusion)
+                // We use padding instead of a div to avoid the "Box in a box" border issue.
+                // 50vh provides the runway while remaining invisible on the dark site background.
+                productArea.style.paddingBottom = "50vh";
 
+                // 2. THE JUMP (Native Scroll)
+                // Leveraging CSS scroll-margin-top: 160px for the perfect landing position.
                 setTimeout(() => {
                     card.scrollIntoView({
                         behavior: 'smooth',
                         block: 'start'
-                    })
-                }, 100);
-
-                // 2. THE MATH (Absolute Page Coordinates)
-                // Timeout allows the DOM to acknowledge the spacer and the expanding card
-                setTimeout(() => {
-                    const cardPageTop = window.pageYOffset + card.getBoundingClientRect().top;
-                    
-                    const navH = document.querySelector('.navbar')?.offsetHeight || 0;
-                    const loginH = (document.getElementById('loginDiv')?.offsetHeight > 0) 
-                                   ? document.getElementById('loginDiv').offsetHeight : 0;
-                    const searchH = document.getElementById('searchBar')?.offsetHeight || 0;
-                    
-                    const totalStickyHeight = navH + loginH + searchH;
-
-                    // 3. THE JUMP
-                    window.scrollTo({
-                        top: cardPageTop - totalStickyHeight,
-                        behavior: 'smooth'
                     });
-                }, 100);
+                }, 200);
             }       
             
-            // 4. DATA FETCHING
+            // 3. DATA FETCHING
             const detailContainer = e.target; 
             const productId = detailContainer.id.replace('details-', '');
             const detailBody = detailContainer.querySelector('.full-desc');
@@ -345,14 +318,11 @@ if (productArea) {
             }
         });
 
-        // Remove virtual space when card is closed
-        // Transition added here so the footer slides back up smoothly
+        // 4. THE CLEANUP
+        // Reset padding when card is closed to bring footer back up.
         productArea.addEventListener('hide.bs.collapse', () => {
-            const spacer = document.getElementById('scroll-spacer');
-            if (spacer) {
-                spacer.style.transition = "height 0.4s ease";
-                spacer.style.height = "0px";
-            }
+            productArea.style.transition = "padding-bottom 0.4s ease";
+            productArea.style.paddingBottom = "1rem";
         });
     }
 } // End of if(currentPage === 'home')

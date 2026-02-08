@@ -25,53 +25,54 @@ include 'includes/header.php';
     </header>
 
     <?php
-    // If an error in writing to the database triggers, this page is reloaded with the error attached for processing.
+    // Validation Feedback: Removed alert-dismissible and btn-close
     if (isset($_GET['msg'])): ?>
         <?php if ($_GET['msg'] === 'exists'): ?>
-            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            <div class="alert alert-warning shadow-sm" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>
                 <strong>Username Taken:</strong> That username is already in use. Please try another.
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         <?php elseif ($_GET['msg'] === 'error'): ?>
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <div class="alert alert-danger shadow-sm" role="alert">
+                <i class="bi bi-exclamation-octagon-fill me-2"></i>
                 <strong>System Error:</strong> We couldn't update your profile at this time.
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         <?php endif; ?>
     <?php endif; ?>
 
-    <form action="api/proc_edit_profile.php" method="POST" class="card p-4 shadow-sm">
+    <form action="api/proc_edit_profile.php" method="POST" class="card p-4 shadow-sm border-0" style="background-color: var(--container-bg);">
         <fieldset>
             <legend class="visually-hidden">Personal Information</legend>
+            
             <div class="row mb-3">
                 <div class="col-md-6">
-                    <label class="form-label">First Name</label>
-                    <input type="text" name="first_name" class="form-control" 
+                    <label class="form-label auth-label">First Name</label>
+                    <input type="text" name="first_name" class="form-control auth-input" 
                            value="<?php echo htmlspecialchars($user['first_name']); ?>" required>
                 </div>
                 <div class="col-md-6">
-                    <label class="form-label">Last Name</label>
-                    <input type="text" name="last_name" class="form-control" 
+                    <label class="form-label auth-label">Last Name</label>
+                    <input type="text" name="last_name" class="form-control auth-input" 
                            value="<?php echo htmlspecialchars($user['last_name']); ?>" required>
                 </div>
             </div>
 
             <div class="mb-3">
-                <label class="form-label">Username</label>
-                <input type="text" name="username" class="form-control" 
+                <label class="form-label auth-label">Username</label>
+                <input type="text" name="username" class="form-control auth-input" 
                        value="<?php echo htmlspecialchars($user['username']); ?>" required>
             </div>
 
             <div class="mb-3">
-                <label class="form-label">Email</label>
-                <input type="email" name="email" class="form-control" 
+                <label class="form-label auth-label">Email</label>
+                <input type="email" name="email" class="form-control auth-input" 
                        value="<?php echo htmlspecialchars($user['email']); ?>" required>
             </div>
 
             <?php if ($user['level'] >= 30): ?>
-                <div class="mb-4 pt-3 border-top">
-                    <label class="form-label fw-bold">Management: Change Account Role</label>
-                    <select name="level" class="form-select">
+                <div class="mb-4 pt-3 border-top border-secondary">
+                    <label class="form-label fw-bold text-info">Management: Change Account Role</label>
+                    <select name="level" class="form-select auth-input">
                         <?php foreach ($roles as $role): ?>
                             <option value="<?php echo $role['auth_level']; ?>" 
                                 <?php echo ($role['auth_level'] == $user['level']) ? 'selected' : ''; ?>>
@@ -83,7 +84,7 @@ include 'includes/header.php';
             <?php endif; ?>
         </fieldset>
 
-        <footer class="d-flex justify-content-between mt-2">
+        <footer class="d-flex justify-content-between mt-4 bg-transparent border-0">
             <a href="dashboard.php" class="btn btn-secondary">Cancel</a>
             <button type="submit" class="btn btn-primary">Save Changes</button>
         </footer>
