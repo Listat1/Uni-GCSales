@@ -180,15 +180,8 @@ if (currentPage === 'home') {
         const cat = hiddenCatID.value;
         
         // Reset if empty
-        if (q.length === 0) {
-            productArea.innerHTML = "Search Results...";
-            return;
-        }
-
-        // --- THE TEST ---
-        // If it's NOT a forced search (Enter/Click), enforce the 3-char minimum.
         if (!isForced && q.length < 3) {
-            productArea.innerHTML = "Keep typing...";
+            productArea.innerHTML = q.length === 0 ? "Search Results..." : "Keep typing...";
             return;
         }
         // If we reach here, it means EITHER (q.length >= 3) OR (isForced is true).
