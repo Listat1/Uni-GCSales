@@ -64,9 +64,10 @@ try {
     $purchase = $pdo->prepare(
         "INSERT INTO order_items (order_id, product_id, quantity, price_each)
         VALUES (?, ?, 1, ?)");
+    // purchase status set to pending
     $status = $pdo->prepare(
         "UPDATE products 
-        SET status_id = 3 
+        SET status_id = 2  
         WHERE product_id = ?");
     // Insert the data    
     foreach ($productIDs as $id) {

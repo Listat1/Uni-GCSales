@@ -129,14 +129,46 @@ include 'includes/header.php';
         <div id="postItemsBody" class="collapse" data-bs-parent="#dashboardAccordion">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center mb-3">
-                    <div class="btn-group btn-group-sm product-filters" role="group">
-                        <input type="radio" class="btn-check" name="statusFilter" id="btnLive" value="1" checked>
-                        <label class="btn btn-outline-secondary" for="btnLive">Live</label>
-                        <input type="radio" class="btn-check" name="statusFilter" id="btnSold" value="3">
-                        <label class="btn btn-outline-secondary" for="btnSold">Sold</label>
-                        <input type="radio" class="btn-check" name="statusFilter" id="btnAll" value="all">
-                        <label class="btn btn-outline-secondary" for="btnAll">Both</label>
-                    </div>                  
+<div class="btn-group 
+    btn-group-sm 
+    product-filters" 
+    role="group">
+    <input class="btn-check" 
+        name="statusFilter" 
+        id="btnLive"
+        type="radio" 
+        value="1" checked>
+    <label class="btn btn-outline-secondary" 
+        for="btnLive">Live
+    </label>
+
+    <input class="btn-check" 
+        name="statusFilter" 
+        id="btnPending"
+        type="radio" 
+        value="2">
+    <label class="btn btn-outline-secondary" 
+        for="btnPending">Pending
+    </label>
+
+    <input class="btn-check" 
+        name="statusFilter" 
+        id="btnSold" 
+        type="radio" 
+        value="3">
+    <label class="btn btn-outline-secondary" 
+        for="btnSold">Sold
+    </label>
+
+    <input class="btn-check" 
+        name="statusFilter" 
+        id="btnAll" 
+        type="radio" 
+        value="all">
+    <label class="btn btn-outline-secondary" 
+        for="btnAll">All
+    </label>
+</div>               
                     <a href="add_product.php" class="btn btn-success btn-sm">Add New Product</a>
                 </div>
 
@@ -144,21 +176,44 @@ include 'includes/header.php';
                     <?php if (empty($myProducts)): ?>
                         <div class="list-group-item bg-transparent text-muted small">No items listed.</div>
                     <?php else: ?>
-                        <?php foreach ($myProducts as $item): ?>
-                            <div class="list-group-item d-flex justify-content-between align-items-center bg-transparent text-reset border-secondary product-item" 
-                                 data-status="<?php echo $item['status_id']; ?>">
-                                <div>
-                                    <span class="fw-bold"><?php echo htmlspecialchars($item['name']); ?></span>
-                                    <span class="badge rounded-pill <?php echo $item['status_id'] == 1 ? 'bg-success' : 'bg-secondary'; ?> ms-2 opacity-75 fw-normal" style="font-size: 0.7rem;">
-                                        <?php echo htmlspecialchars($item['status_label']); ?>
-                                    </span>
-                                    <?php if ($item['status_id'] == 3 && $item['buyer_name']): ?>
-                                        <br><small class="text-success">Purchased by: <?php echo htmlspecialchars($item['buyer_name']); ?></small>
-                                    <?php endif; ?>
-                                </div>
-                                <a href="edit_product.php?id=<?php echo $item['product_id']; ?>" class="btn btn-outline-info btn-sm py-0">Edit</a>
-                            </div>
-                        <?php endforeach; ?>
+<?php foreach ($myProducts as $item): 
+    // Logic to determine badge and button styles based on status
+    if ($item['status_id'] == 1) {
+        $badgeClass = 'bg-success';      // Live: Green
+        $btnLabel   = 'Edit';
+        $btnClass   = 'btn-outline-info';
+    } elseif ($item['status_id'] == 2) {
+        $badgeClass = 'bg-warning text-dark'; // Pending: Amber (Attention!)
+        $btnLabel   = 'Finalize';
+        $btnClass   = 'btn-warning';      // Solid button to indicate action needed
+    } else {
+        $badgeClass = 'bg-secondary';    // Sold: Steel/Gray (Locked)
+        $btnLabel   = 'View';
+        $btnClass   = 'btn-outline-secondary';
+    }
+?>
+    <div class="list-group-item d-flex justify-content-between align-items-center bg-transparent text-reset border-secondary product-item" 
+         data-status="<?php echo $item['status_id']; ?>">
+        <div>
+            <span class="fw-bold"><?php echo htmlspecialchars($item['name']); ?></span>
+            
+            <span class="badge rounded-pill <?php echo $badgeClass; ?> ms-2 opacity-75 fw-normal" style="font-size: 0.7rem;">
+                <?php echo htmlspecialchars($item['status_label']); ?>
+            </span>
+
+            <?php if ($item['status_id'] == 3 && !empty($item['buyer_name'])): ?>
+                <br><small class="text-success">Purchased by: <?php echo htmlspecialchars($item['buyer_name']); ?></small>
+            <?php elseif ($item['status_id'] == 2): ?>
+                <br><small class="text-warning italic">Awaiting final sign-off</small>
+            <?php endif; ?>
+        </div>
+
+        <a href="edit_product.php?id=<?php echo $item['product_id']; ?>" 
+           class="btn <?php echo $btnClass; ?> btn-sm py-0">
+           <?php echo $btnLabel; ?>
+        </a>
+    </div>
+<?php endforeach; ?>
                     <?php endif; ?>
                 </div>
             </div>

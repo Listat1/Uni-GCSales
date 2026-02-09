@@ -12,11 +12,23 @@ $pdo = getDatabaseConnection();
 $userID = $_SESSION['user_id'];
 $productID = (int)$_POST['product_id'];
 
-// Check ownership of requested record to edit
-$check = $pdo->prepare("SELECT product_id FROM products WHERE product_id = ? AND seller_id = ?");
+// Check ownership AND get current status for the sanity check
+$check = $pdo->prepare(
+    "SELECT product_id, status_id 
+    FROM products 
+    WHERE product_id = ? 
+    AND seller_id = ?");
 $check->execute([$productID, $userID]);
-if (!$check->fetch()) {
+$existingProduct = $check->fetch(); // Store the result here!
+
+if (!$existingProduct) {
     die("Unauthorised action.");
+}
+
+// Sanity check, Block updates if status = "sold" (3)
+if ((int)$existingProduct['status_id'] === 3) {
+    header("Location: ../dashboard.php?msg=locked");
+    exit;
 }
 
 // Collate and Sanitise POSTED Data 
@@ -41,7 +53,8 @@ try {
             category_id = ?,
             long_description = ?
         WHERE product_id = ? 
-        AND seller_id = ?";
+        AND seller_id = ?
+        AND status_id != 3"; // << Updates to items with status "sold" (3) will fail
     $pdo->prepare($sql)->execute([
         $name, $short_desc, $price, $stock, 
         $status_id, $cat_id, $long_desc, $productID, $userID

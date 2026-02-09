@@ -68,15 +68,50 @@ include 'includes/header.php';
                         value="<?= $product['price'] ?>" required>
                 </div>
 
-                <div class="col-md-4">
-                    <label class="form-label">Status</label>
-                    <select class="form-select"
-                        name="status_id">
-                        <option value="1" <?= $product['status_id'] == 1 ? 'selected' : '' ?>>Live</option>
-                        <option value="3" <?= $product['status_id'] == 3 ? 'selected' : '' ?>>Sold</option>
-                        <option value="2" <?= $product['status_id'] == 2 ? 'selected' : '' ?>>Hidden/Draft</option>
-                    </select>
-                </div>
+<div class="col-md-4">
+    <label class="form-label">Status</label>
+    
+    <?php if ($product['status_id'] == 3): ?>
+        <div class="form-control bg-dark text-success border-success shadow-sm">
+            <i class="bi bi-lock-fill me-2"></i> Sold (Listing Finalized)
+        </div>
+        <input type="hidden" name="status_id" value="3">
+        <div class="form-text text-info">
+            <i class="bi bi-info-circle"></i> This record is locked for archival.
+        </div>
+        
+    <?php else: ?>
+        <select class="form-select" name="status_id" id="statusSelect">
+            <?php
+                $statStmt = $db->query("SELECT * FROM product_status ORDER BY status_id ASC");
+                while ($stat = $statStmt->fetch()) {
+                    $selected = ($stat['status_id'] == $product['status_id']) ? 'selected' : '';
+                    echo "<option value=\"{$stat['status_id']}\" $selected>" . htmlspecialchars($stat['status_label']) . "</option>";
+                }
+            ?>
+        </select>
+        <div id="soldWarning" class="form-text text-warning d-none">
+            <i class="bi bi-exclamation-triangle"></i> 
+            <strong>Note:</strong> Marking as "Sold" is permanent and cannot be undone.
+        </div>
+    <?php endif; ?>
+</div>
+
+<script>
+    const statusSelect = document.getElementById('statusSelect');
+    const soldWarning = document.getElementById('soldWarning');
+    
+    if (statusSelect) {
+        statusSelect.addEventListener('change', function() {
+            // If value 3 (Sold) is selected, show the warning
+            if (this.value == '3') {
+                soldWarning.classList.remove('d-none');
+            } else {
+                soldWarning.classList.add('d-none');
+            }
+        });
+    }
+</script>
 
                 <div class="col-md-4">
                     <label class="form-label">Stock Quantity</label>
