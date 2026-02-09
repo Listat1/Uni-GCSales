@@ -169,21 +169,47 @@ if (currentPage === 'home') {
     const hiddenCatID = document.getElementById('hiddenCatID');
 
     // 2. Define Function (Hoisted)
-    async function triggerLiveSearch() {
+// 2. Define Function (Modified for UAT 7.1)
+    // Parameter 'isForced' is true if the user hits Enter or selects a category
+// 2. Define Function (UAT 7.1 Refined)
+// 2. Define Function (UAT 7.1 - Final Logic)
+    async function triggerLiveSearch(isForced = false) {
         if (!searchInput || !productArea || !hiddenCatID) return;
+        
         const q = searchInput.value.trim();
         const cat = hiddenCatID.value;
         
-        if (q.length < 3) {
-            productArea.innerHTML = q.length > 0 ? "Keep typing..." : "Search Results...";
+        // Reset if empty
+        if (q.length === 0) {
+            productArea.innerHTML = "Search Results...";
             return;
         }
+
+        // --- THE TEST ---
+        // If it's NOT a forced search (Enter/Click), enforce the 3-char minimum.
+        if (!isForced && q.length < 3) {
+            productArea.innerHTML = "Keep typing...";
+            return;
+        }
+        // If we reach here, it means EITHER (q.length >= 3) OR (isForced is true).
+
         try {
             const response = await fetch(`api/fetch_product_list.php?q=${q}&cat=${cat}`);
             const products = await response.json();
             
             productArea.innerHTML = "";
             
+            // This now successfully catches "z + Enter" or "do + Enter"
+            if (products.length === 0) {
+                productArea.innerHTML = `
+                    <div class="alert alert-warning border-warning bg-dark-subtle mt-3 shadow-sm">
+                        <i class="bi bi-search me-2"></i> 
+                        <strong>No results found for "${q.replace(/</g, "&lt;")}"</strong>
+                        <p class="mb-0 mt-2 small">Check spelling or try a different category.</p>
+                    </div>`;
+                return;
+            }
+
             products.forEach(p => {
                 const cardContainer = document.createElement("div");
                 cardContainer.className = "result-card mb-3";
@@ -191,10 +217,21 @@ if (currentPage === 'home') {
                 productArea.appendChild(cardContainer);
                 new bootstrap.Collapse(cardContainer.querySelector('.collapse'), { toggle: false });
             });
-            // Note: Spacer div removed in favor of Padding logic below
         } 
-        catch (err) { console.error("LiveSearch Error:", err); }
+        catch (err) { 
+            console.error("LiveSearch Error:", err); 
+            productArea.innerHTML = '<div class="alert alert-danger">Search unavailable.</div>';
+        }
     }
+
+    // 4. Category Selection - Force the search (isForced = true)
+    document.addEventListener('click', (e) => {
+        const catBtn = e.target.closest('.cat-grid-btn');
+        if (catBtn) {
+            // ... (keep your existing display/hiddenCatID logic here) ...
+            triggerLiveSearch(true);
+        }
+    });
 
     // 3. Category Toggle (Guarded)
     if (browseBtn && heroBanner) {
@@ -204,8 +241,7 @@ if (currentPage === 'home') {
             browseBtn.classList.toggle('btn-active');
         });
     }
-
-    // 4. Category Selection (Delegated)
+// 4. Category Selection (Delegated)
     document.addEventListener('click', (e) => {
         const catBtn = e.target.closest('.cat-grid-btn');
         if (catBtn) {
@@ -216,14 +252,25 @@ if (currentPage === 'home') {
             if (heroBanner) heroBanner.classList.remove('show-categories');
             if (browseBtn) browseBtn.classList.remove('btn-active');
             
-            triggerLiveSearch();
+            // FORCE the search because a category was specifically picked
+            triggerLiveSearch(true); 
         }
     });
 
-    // 5. Search Input (Guarded)
+    // 5. Search Input (Corrected listeners)
     if (searchInput) {
-        searchInput.addEventListener('input', triggerLiveSearch);
+        // Normal typing: passed as false to honor the 3-char minimum
+        searchInput.addEventListener('input', () => triggerLiveSearch(false));
+
+        // Pressing Enter: passed as true to bypass the 3-char minimum
+        searchInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault(); 
+                triggerLiveSearch(true);
+            }
+        });
     }
+    
 
     // Action taken when event with BSclass:collapse triggered.
     // Scoped specifically to productArea to avoid Navbar collisions.
