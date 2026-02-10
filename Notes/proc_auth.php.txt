@@ -14,3 +14,15 @@ Level   Role    Authority
 All Higher levels will have full access to lower levels.
 
 New Registrations will be given access level 10
+
+It appears that 
+        // $_SESSION['user_name'] = $user['first_name'];
+        // $_SESSION['user_level'] = $user['level'];
+        And
+        // $_SESSION['user_name'] = $firstName;
+        // $_SESSION['user_level'] = 10;
+Has no use
+        // $_SESSION['user_address_id'] = $addressId; << Check moved to orders
+Is used, but the test has been moved to orders.php (allows for fresh info to be used)
+When user modifies address, the  $_SESSION['user_address_id'] needs resetting (if set) so fresh data is called in orders.php
+

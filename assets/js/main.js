@@ -168,11 +168,6 @@ if (currentPage === 'home') {
     const productArea = document.getElementById('productArea');
     const hiddenCatID = document.getElementById('hiddenCatID');
 
-    // 2. Define Function (Hoisted)
-// 2. Define Function (Modified for UAT 7.1)
-    // Parameter 'isForced' is true if the user hits Enter or selects a category
-// 2. Define Function (UAT 7.1 Refined)
-// 2. Define Function (UAT 7.1 - Final Logic)
     async function triggerLiveSearch(isForced = false) {
         if (!searchInput || !productArea || !hiddenCatID) return;
         

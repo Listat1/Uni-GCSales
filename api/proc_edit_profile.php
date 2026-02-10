@@ -39,7 +39,7 @@ if ($current_user['level'] >= 30 && $new_level !== null) {
     $stmt->execute($params);
 
     // No Errors - Redirect back to dashboard
-    header("Location: ../dashboard.php?msg=updated");
+    header("Location: ../dashboard.php?msg=updated&item=Profile");
     exit;
 
 } 

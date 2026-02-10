@@ -12,21 +12,19 @@ $pdo = getDatabaseConnection();
 $userID = $_SESSION['user_id'];
 $productID = (int)$_POST['product_id'];
 
-// Check ownership AND get current status for the sanity check
-$check = $pdo->prepare(
-    "SELECT product_id, status_id 
-    FROM products 
-    WHERE product_id = ? 
-    AND seller_id = ?");
-$check->execute([$productID, $userID]);
-$existingProduct = $check->fetch(); // Store the result here!
-
-if (!$existingProduct) {
+// Get product ownership and status
+$stmt = $pdo->prepare("SELECT product_id, status_id
+    FROM products
+    WHERE product_id = ? AND seller_id = ?
+");
+$stmt->execute([$productID, $userID]);
+// Check Ownership/status
+$checkProduct = $stmt->fetch();
+if (!$checkProduct) {
+    // Product does not exist / belong to this user
     die("Unauthorised action.");
-}
-
-// Sanity check, Block updates if status = "sold" (3)
-if ((int)$existingProduct['status_id'] === 3) {
+} elseif ((int)$checkProduct['status_id'] === 3) {
+    // Product is sold (status = 3), cannot edit
     header("Location: ../dashboard.php?msg=locked");
     exit;
 }
@@ -63,9 +61,9 @@ try {
     // -- Replace Images if supplied --
     if (!empty($_FILES['product_images']['name'][0])) {
         // Get all file pointers for the images
-        $curFilesStmt = $pdo->prepare("SELECT file_path, thumb_path FROM product_images WHERE product_id = ?");
-        $curFilesStmt->execute([$productID]);
-        $fileList = $curFilesStmt->fetchAll(PDO::FETCH_ASSOC);
+        $stmt = $pdo->prepare("SELECT file_path, thumb_path FROM product_images WHERE product_id = ?");
+        $stmt->execute([$productID]);
+        $fileList = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         // Delete the files from disk: Check NULL / Existence / Placeholder
         foreach ($fileList as $file) {
@@ -90,8 +88,10 @@ try {
         require_once __DIR__ . '/../includes/ImageProcessor.php';
         processAndStoreImages($pdo, $productID, $name);
     }
+    // Because AND status_id != 3"; prevents a write, instead of allowing the attempt, no exception will be raised
+    // Unless there is a genuine PDO error. Before redirecting back to dashboard, need to check the actual update state.
 
-    header("Location: ../dashboard.php?msg=updated");
+    header("Location: ../dashboard.php?msg=updated&item=Product");
     exit;
 
 } catch (PDOException $e) {

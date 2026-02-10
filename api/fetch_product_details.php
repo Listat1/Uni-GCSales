@@ -1,6 +1,7 @@
 <?php
 // api/fetch_product_details.php
 // Fetches full description of product when user selects more info via JS on index.php
+// If full description not available, then placeholder message is provided
 // Session check is not performed here as visitors must be able to browse, not just registered members.
 header('Content-Type: application/json');
 require_once __DIR__ . '/../includes/dbconnection.php';

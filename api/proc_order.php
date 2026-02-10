@@ -17,11 +17,23 @@ if (empty($productIDs)) {
     exit;
 }
 
+// Check delivery address exists (required for ACID transaction)
+if (!isset($_SESSION['user_address_id'])) {
+    $stmt = $pdo->prepare("SELECT address_id FROM addresses WHERE user_id = ? AND is_default = 1");
+    $stmt->execute([$buyerID]);
+    $addressId = $stmt->fetchColumn();
+
+    if (!$addressId) {
+        throw new Exception("No delivery address found for this account.");
+    }
+
+    $_SESSION['user_address_id'] = $addressId;
+} else {
+    $addressId = $_SESSION['user_address_id'];
+}
 try {
     // Start the Transaction - ACID
     $pdo->beginTransaction();
-    // Check delivery address exists (required)
-    if (!$addressId = $_SESSION['user_address_id'] ?? null) throw new Exception("No delivery address found for this account.");
     
     // Race Condition Protection protection using FOR UPDATE to 'lock' the rows in Database
     $placeholders = implode(',', array_fill(0, count($productIDs), '?'));
