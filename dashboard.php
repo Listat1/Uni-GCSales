@@ -292,73 +292,95 @@ unset($alertType, $strongText, $message, $_GET['msg'], $msg);
     </article>
 
 
-<?php
+    <?php
     // Admins Only
- if($user['level'] >= 30): // Admin+ only ?>
-<article class="card mb-3">
-    <div class="d-flex align-items-center border-bottom bg-body-tertiary">
-        <header class="card-header border-0 flex-grow-1 d-flex justify-content-between align-items-center mb-0 collapsed"
-                style="cursor: pointer; background: transparent;"
-                data-bs-toggle="collapse"
-                data-bs-target="#adminBody">
-            <span>Administration</span>
-            <span class="collapse-icon">▼</span>
-        </header>
-        <div class="pe-3 ms-3 border-start ps-3 d-flex align-items-center" style="height: 24px; min-width: 85px;"></div>
-    </div>
-    
-    <div id="adminBody" class="collapse" data-bs-parent="#dashboardAccordion">
-        <div class="card-body">
-            <form method="POST" action="api/proc_admin.php" id="adminForm">
-                <div class="mb-3">
-                    <label for="userSelect" class="form-label">Select User:</label>
-                    <select name="user_id" id="userSelect" class="form-select" required>
-                        <option value="">-- Select a user --</option>
-                        <?php
-                        $stmt = $pdo->query("SELECT * FROM users WHERE user_id != {$user['user_id']} ORDER BY username");
-                        while($u = $stmt->fetch()){
-                            echo '<option value="'. $u['user_id'] .'">'. htmlspecialchars($u['username'] .' ('. $u['email'] .')') .'</option>';
-                        }
-                        ?>
-                    </select>
+    if($user['level'] >= 30):
+        ?>
+        <article class="card mb-3">
+            <div class="d-flex align-items-center border-bottom bg-body-tertiary">
+                <header class="card-header border-0 flex-grow-1 d-flex justify-content-between align-items-center mb-0 collapsed"
+                        style="cursor: pointer; background: transparent;"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#adminBody">
+                    <span>Administration</span>
+                    <span class="collapse-icon">▼</span>
+                </header>
+                <div class="pe-3 ms-3 border-start ps-3 d-flex align-items-center" style="height: 24px; min-width: 85px;"></div>
+            </div>
+            
+            <div id="adminBody" class="collapse" data-bs-parent="#dashboardAccordion">
+                <div class="card-body">
+                    <form method="POST" action="api/proc_admin.php" id="adminForm">
+                        <div class="mb-3">
+                            <label for="userSelect" class="form-label">Select User:</label>
+                            <select name="user_id" id="userSelect" class="form-select" required>
+                                <option value="">
+                                    -- Select a user --
+                                </option>
+                                <?php
+                                $stmt = $pdo->query(
+                                        "SELECT * 
+                                        FROM users 
+                                        WHERE user_id != {$user['user_id']} 
+                                        ORDER BY username");
+                                while($u = $stmt->fetch()){
+                                    echo '<option value="'. $u['user_id'] .'">'. htmlspecialchars($u['username'] .' ('. $u['email'] .')') .'</option>';
+                                }
+                                ?>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="newLevel" class="form-label">
+                                Set Access Level:
+                            </label>
+                            <select name="level" id="newLevel" class="form-select" required>
+                                <?php
+                                $stmt = $pdo->query(
+                                    "SELECT * 
+                                    FROM roles 
+                                    ORDER BY auth_level");
+                                while($r = $stmt->fetch()){
+                                    if($r['auth_level'] <= $user['level']){
+                                        echo '<option value="'. $r['auth_level'] .'">'. htmlspecialchars($r['role_name'] .' (Level '. $r['auth_level'] .')') .'</option>';
+                                    }
+                                }
+                                ?>
+                            </select>
+                        </div>
+
+                        <div class="mb-3 d-flex gap-2">
+                            <button type="submit" name="action" value="promote" class="btn btn-primary btn-sm">
+                                Change Level
+                            </button>
+                            <button type="submit" name="action" value="reset" class="btn btn-warning btn-sm">
+                                Reset Password
+                            </button>
+                            <?php 
+                            if ($user['level'] >= 40): 
+                                ?>
+                                <button type="submit" name="action" value="delete" class="btn btn-danger btn-sm" 
+                                    onclick="return confirm('Full Purge: This anonymises the user and PERMANENTLY deletes all associated addresses. Proceed?')">
+                                    Delete User
+                                </button>
+                            <?php 
+                            endif; 
+                            ?>
+                        </div>
+                    </form>
+                    <hr>
+                    <small class="text-muted d-block">
+                        <strong>Moderation:</strong> Allows for password resets and managing user access levels.<br>
+                        <?php if ($user['level'] >= 40): ?>
+                            <strong>Full Delete:</strong> Anonymises the profile (scrubs personal data) and purges all address records from the database.
+                        <?php endif; ?>
+                    </small>
                 </div>
-
-                <div class="mb-3">
-                    <label for="newLevel" class="form-label">Set Access Level:</label>
-                    <select name="level" id="newLevel" class="form-select" required>
-                        <?php
-                        $rolesStmt = $pdo->query("SELECT * FROM roles ORDER BY auth_level");
-                        while($r = $rolesStmt->fetch()){
-                            if($r['auth_level'] <= $user['level']){
-                                echo '<option value="'. $r['auth_level'] .'">'. htmlspecialchars($r['role_name'] .' (Level '. $r['auth_level'] .')') .'</option>';
-                            }
-                        }
-                        ?>
-                    </select>
-                </div>
-
-                <div class="mb-3 d-flex gap-2">
-                    <button type="submit" name="action" value="promote" class="btn btn-primary btn-sm">Change Level</button>
-                    <button type="submit" name="action" value="reset" class="btn btn-warning btn-sm">Reset Password</button>
-                    
-                    <?php if ($user['level'] >= 40): ?>
-                        <button type="submit" name="action" value="delete" class="btn btn-danger btn-sm" onclick="return confirm('Full Purge: This will anonymise the user profile and PERMANENTLY delete all associated addresses. Proceed?')">Delete User</button>
-                    <?php endif; ?>
-                </div>
-            </form>
-            <hr>
-            <small class="text-muted d-block">
-                <strong>Moderation:</strong> Allows for password resets and managing user access levels.<br>
-                <?php if ($user['level'] >= 40): ?>
-                    <strong>Full Delete:</strong> Anonymises the profile (scrubs personal data) and purges all address records from the database.
-                <?php endif; ?>
-            </small>
-        </div>
-    </div>
-</article>
-<?php endif; ?>
-
-
+            </div>
+        </article>
+    <?php
+    endif;
+    ?>
 </section>
 
 <script>
