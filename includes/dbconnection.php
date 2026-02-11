@@ -1,6 +1,7 @@
 <?php
 // includes/dbconnection.php
 function getDatabaseConnection() {
+    date_default_timezone_set('Europe/London');
     // Load the .env file
     $envPath = __DIR__ . '/../.env';    // Check .env exists
     if (!file_exists($envPath)) {

@@ -7,7 +7,7 @@
         <?php echo $pageTitle ?? 'Grimsby and Clee Sells'; ?>
     </title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="assets/css/main.css?v=1.2">
     <script>
         // Set Dark / Light theme
         const applyTheme = (theme) => {

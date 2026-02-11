@@ -353,3 +353,42 @@ footer { background-color: var(--footer-bg); color: var(--site-text); }
     25% { transform: translateX(-5px); }
     75% { transform: translateX(5px); }
 }
+/* -- Consolidated Galaxy S5 / Small Mobile Master Block -- */
+@media (max-width: 480px) {
+    main {
+        padding: 1rem 0 !important; /* Top/Bottom 1rem, Sides 0 */
+        max-width: 100% !important;
+    }
+
+    .hero {
+        border-radius: 0 !important;
+        min-height: 200px;
+    }
+
+    #heroContent {
+        width: 95%;
+        font-size: 1.8rem;
+    }
+
+    .display-div {
+        padding: 0 5px !important; /* 5px breathing room for the cards */
+        margin-top: 0.5rem;
+    }
+
+    .result-card {
+        width: 100% !important;
+        margin: 0 0 8px 0 !important;
+        border-radius: 4px; /* Clean, modern mobile look */
+    }
+
+    .result-card.expanded .thumb-img {
+        width: 100%;
+        border-radius: 0;
+    }
+
+    .admin-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+}
